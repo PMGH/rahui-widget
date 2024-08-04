@@ -1,3 +1,4 @@
+import flatpickr from "flatpickr";
 import { styles } from "./assets.js";
 
 class RahuiWidget {
@@ -10,6 +11,7 @@ class RahuiWidget {
   widgetContainer = null as unknown as HTMLDivElement;
   formId = "rahui-booking-form";
   form = null as unknown as HTMLElement | null;
+  datetimePickerId = "datetime-picker";
 
   async initialize() {
     /**
@@ -39,6 +41,16 @@ class RahuiWidget {
      */
     this.form = document.getElementById(this.formId);
     this.form && this.form.addEventListener("submit", this.formSubmit);
+
+    /**
+     * Setup datetime picker using flatpickr
+     */
+    flatpickr(`#${this.datetimePickerId}`, {
+      enableTime: true,
+      time_24hr: true,
+      minDate: "today",
+      dateFormat: "Y-m-d H:i",
+    });
   }
 
   formSubmit(e: any) {
@@ -52,6 +64,10 @@ class RahuiWidget {
         <h3>Book a table</h3>
       </header>
       <form id="${this.formId}">
+        <div class="form__field">
+          <label for="datetime">Booking (date and time):</label>
+          <input id="${this.datetimePickerId}" name="datetime" placeholder="Select date and time">
+        </div>
         <div class="form__field">
           <label for="first_name">First name</label>
           <input
