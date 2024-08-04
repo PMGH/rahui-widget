@@ -56,6 +56,11 @@ class RahuiWidget {
   formSubmit(e: any) {
     e.preventDefault();
     console.log("Submitted form", e);
+    const data = new FormData(e.target);
+    const parsedData = Object.fromEntries(data.entries());
+    const datetime = new Date(parsedData.datetime as string);
+    const datetimeUTC = datetime.toUTCString();
+    console.log({ data: parsedData, datetime, datetimeUTC });
   }
 
   createWidgetContent() {
