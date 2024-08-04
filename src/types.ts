@@ -1,2 +1,10 @@
-export type Position = "bottom-right" | "top-right";
-export type PositionObj = Record<string, string>;
+export type Payload = {
+  "widget-submission": string;
+  datetime: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  notes: string;
+  number_of_covers: string;
+  phone: string;
+};

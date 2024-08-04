@@ -1,5 +1,6 @@
 import flatpickr from "flatpickr";
 import { styles } from "./assets.js";
+import { type Payload } from "./types";
 
 class RahuiWidget {
   constructor() {
@@ -7,7 +8,6 @@ class RahuiWidget {
     this.injectStyles();
   }
 
-  open = false;
   widgetContainer = null as unknown as HTMLDivElement;
   formId = "rahui-booking-form";
   form = null as unknown as HTMLElement | null;
@@ -40,7 +40,8 @@ class RahuiWidget {
      * Add event listener to use custom form submission
      */
     this.form = document.getElementById(this.formId);
-    this.form && this.form.addEventListener("submit", this.formSubmit);
+    this.form &&
+      this.form.addEventListener("submit", this.formSubmit.bind(this));
 
     /**
      * Setup datetime picker using flatpickr
@@ -53,14 +54,23 @@ class RahuiWidget {
     });
   }
 
-  formSubmit(e: any) {
+  async formSubmit(e: any) {
     e.preventDefault();
-    console.log("Submitted form", e);
     const data = new FormData(e.target);
-    const parsedData = Object.fromEntries(data.entries());
+    const parsedData = Object.fromEntries(data.entries()) as Payload;
     const datetime = new Date(parsedData.datetime as string);
     const datetimeUTC = datetime.toUTCString();
-    console.log({ data: parsedData, datetime, datetimeUTC });
+    console.log({ parsedData });
+
+    const payload: Payload = {
+      ...parsedData,
+      datetime: datetimeUTC,
+    };
+    await this.forwardFormSubmissionToServer(payload);
+  }
+
+  async forwardFormSubmissionToServer(payload: Payload) {
+    console.log("forwardFormSubmissionToServer:", { payload });
   }
 
   createWidgetContent() {
