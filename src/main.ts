@@ -88,8 +88,10 @@ class RahuiWidget {
             placeholder="Enter your phone number"
           />
         </div>
-        <div class="form__field">
-          <label for="number_of_covers">Guests</label>
+        <div class="form__field form__field__required">
+          <div class="form__field__required">
+            <label for="number_of_covers">Guests</label><span class="required-field-symbol">*</span>
+          </div>
           <input
             type="number"
             id="number_of_covers"

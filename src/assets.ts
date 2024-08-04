@@ -41,6 +41,14 @@ export const styles = `
     margin-bottom: 8px;
     font-size: 14px;
   }
+  .form__field__required {
+    display: flex;
+  }
+  .required-field-symbol {
+    color: red;
+    font-size: 1.5rem;
+    margin-left: 0.25rem;
+  }
   .form__field input,
   .form__field textarea {
     border: 1px solid #000000ad;
