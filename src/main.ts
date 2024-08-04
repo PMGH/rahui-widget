@@ -1,72 +1,28 @@
-import { Position, PositionObj } from "./types";
-import { styles, CLOSE_ICON, MESSAGE_ICON } from "./assets.js";
+import { styles } from "./assets.js";
 
 class RahuiWidget {
-  constructor(position: Position = "bottom-right") {
-    this.position = this.getPosition(position);
+  constructor() {
     this.initialize();
     this.injectStyles();
   }
 
-  position: PositionObj = {};
   open = false;
   widgetContainer = null as unknown as HTMLDivElement;
-  widgetIcon = null as unknown as HTMLSpanElement;
-  closeIcon = null as unknown as HTMLSpanElement;
-
-  getPosition(position: Position): PositionObj {
-    const [vertical, horizontal] = position.split("-");
-    return {
-      [vertical]: "30px",
-      [horizontal]: "30px",
-    };
-  }
+  formId = "rahui-booking-form";
+  form = null as unknown as HTMLElement | null;
 
   async initialize() {
     /**
      * Create and append a div element to the document body
      */
     const container = document.createElement("div");
-    container.style.position = "fixed";
-    Object.keys(this.position).forEach(
-      (key: any) => (container.style[key] = this.position[key])
-    );
     document.body.appendChild(container);
 
     /**
-     * Create a button element and give it a class of button__container
-     */
-    const buttonContainer = document.createElement("button");
-    buttonContainer.classList.add("button__container");
-
-    /**
-     * Create a span element for the widget icon, give it a class of `widget__icon`, and update its innerHTML property to an icon that would serve as the widget icon.
-     */
-    const widgetIconElement = document.createElement("span");
-    widgetIconElement.innerHTML = MESSAGE_ICON;
-    widgetIconElement.classList.add("widget__icon");
-    this.widgetIcon = widgetIconElement;
-
-    /**
-     * Create a span element for the close icon, give it a class of `widget__icon` and `widget__hidden` which would be removed whenever the widget is closed, and update its innerHTML property to an icon that would serve as the widget icon during that state.
-     */
-    const closeIconElement = document.createElement("span");
-    closeIconElement.innerHTML = CLOSE_ICON;
-    closeIconElement.classList.add("widget__icon", "widget__hidden");
-    this.closeIcon = closeIconElement;
-
-    /**
-     * Append both icons created to the button element and add a `click` event listener on the button to toggle the widget open and close.
-     */
-    buttonContainer.appendChild(this.widgetIcon);
-    buttonContainer.appendChild(this.closeIcon);
-    buttonContainer.addEventListener("click", this.toggleOpen.bind(this));
-
-    /**
-     * Create a container for the widget and add the following classes:- `widget__hidden`, `widget__container`
+     * Create a container for the widget and add the following classes:- `widget__container`
      */
     this.widgetContainer = document.createElement("div");
-    this.widgetContainer.classList.add("widget__hidden", "widget__container");
+    this.widgetContainer.classList.add("widget__container");
 
     /**
      * Invoke the `createWidget()` method
@@ -74,27 +30,45 @@ class RahuiWidget {
     this.createWidgetContent();
 
     /**
-     * Append the widget's content and the button to the container
+     * Append the widget's content to the container
      */
     container.appendChild(this.widgetContainer);
-    container.appendChild(buttonContainer);
+
+    /**
+     * Add event listener to use custom form submission
+     */
+    this.form = document.getElementById(this.formId);
+    this.form && this.form.addEventListener("submit", this.formSubmit);
+  }
+
+  formSubmit(e: any) {
+    e.preventDefault();
+    console.log("Submitted form", e);
   }
 
   createWidgetContent() {
     this.widgetContainer.innerHTML = `
       <header class="widget__header">
-        <h3>Start a conversation</h3>
-        <p>We usually respond within a few hours</p>
+        <h3>Book a table</h3>
       </header>
-      <form>
+      <form id="${this.formId}">
         <div class="form__field">
-            <label for="name">Name</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              placeholder="Enter your name"
-            />
+          <label for="first_name">First name</label>
+          <input
+            type="text"
+            id="first_name"
+            name="first_name"
+            placeholder="Enter your first name"
+          />
+        </div>
+        <div class="form__field">
+          <label for="last_name">Last name</label>
+          <input
+            type="text"
+            id="last_name"
+            name="last_name"
+            placeholder="Enter your last name"
+          />
         </div>
         <div class="form__field">
           <label for="email">Email</label>
@@ -102,28 +76,38 @@ class RahuiWidget {
             type="email"
             id="email"
             name="email"
-            placeholder="Enter your email"
+            placeholder="Enter your email address"
           />
         </div>
         <div class="form__field">
-          <label for="subject">Subject</label>
+          <label for="phone">Phone number</label>
           <input
-            type="text"
-            id="subject"
-            name="subject"
-            placeholder="Enter Message Subject"
+            type="phone"
+            id="phone"
+            name="phone"
+            placeholder="Enter your phone number"
           />
         </div>
         <div class="form__field">
-          <label for="message">Message</label>
+          <label for="number_of_covers">Guests</label>
+          <input
+            type="number"
+            id="number_of_covers"
+            name="number_of_covers"
+            placeholder="1"
+            required
+          />
+        </div>
+        <div class="form__field">
+          <label for="notes">Notes</label>
           <textarea
-            id="message"
-            name="message"
-            placeholder="Enter your message"
+            id="notes"
+            name="notes"
+            placeholder="Enter any additional notes"
             rows="6"
           ></textarea>
         </div>
-        <button>Send Message</button>
+        <button type="submit">Create Booking</button>
       </form>
     `;
   }
@@ -132,20 +116,6 @@ class RahuiWidget {
     const styleTag = document.createElement("style");
     styleTag.innerHTML = styles.replace(/^\s+|\n/gm, "");
     document.head.appendChild(styleTag);
-  }
-
-  toggleOpen() {
-    this.open = !this.open;
-    if (this.open) {
-      this.widgetIcon.classList.add("widget__hidden");
-      this.closeIcon.classList.remove("widget__hidden");
-      this.widgetContainer.classList.remove("widget__hidden");
-    } else {
-      this.createWidgetContent();
-      this.widgetIcon.classList.remove("widget__hidden");
-      this.closeIcon.classList.add("widget__hidden");
-      this.widgetContainer.classList.add("widget__hidden");
-    }
   }
 }
 
