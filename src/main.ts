@@ -69,6 +69,7 @@ class RahuiWidget {
         <h3>Book a table</h3>
       </header>
       <form id="${this.formId}">
+        <input type="hidden" id="widget-submission" name="widget-submission" value="true">
         <div class="form__field__group">
           <div class="form__field">
             <div class="form__field__required">
