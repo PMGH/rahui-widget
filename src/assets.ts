@@ -36,6 +36,7 @@ export const styles = `
     margin-bottom: 1.5rem;
     display: flex;
     flex-direction: column;
+    width: 100%;
   }
   .form__field label {
     margin-bottom: 8px;
@@ -74,5 +75,14 @@ export const styles = `
   }
   form button:hover {
     background-color: rgba(0, 0, 0, 95%);
+  }
+  .form__field__group {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+  }
+  .number-of-covers,
+  .last-name {
+    margin-left: 1rem;
   }
 `;

@@ -64,58 +64,66 @@ class RahuiWidget {
         <h3>Book a table</h3>
       </header>
       <form id="${this.formId}">
-        <div class="form__field">
-          <label for="datetime">Booking (date and time):</label>
-          <input id="${this.datetimePickerId}" name="datetime" placeholder="Select date and time">
-        </div>
-        <div class="form__field">
-          <label for="first_name">First name</label>
-          <input
-            type="text"
-            id="first_name"
-            name="first_name"
-            placeholder="Enter your first name"
-          />
-        </div>
-        <div class="form__field">
-          <label for="last_name">Last name</label>
-          <input
-            type="text"
-            id="last_name"
-            name="last_name"
-            placeholder="Enter your last name"
-          />
-        </div>
-        <div class="form__field">
-          <label for="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            placeholder="Enter your email address"
-          />
-        </div>
-        <div class="form__field">
-          <label for="phone">Phone number</label>
-          <input
-            type="phone"
-            id="phone"
-            name="phone"
-            placeholder="Enter your phone number"
-          />
-        </div>
-        <div class="form__field form__field__required">
-          <div class="form__field__required">
-            <label for="number_of_covers">Guests</label><span class="required-field-symbol">*</span>
+        <div class="form__field__group">
+          <div class="form__field">
+            <div class="form__field__required">
+              <label for="datetime">Booking (date and time)</label><span class="required-field-symbol">*</span>
+            </div>
+            <input id="${this.datetimePickerId}" name="datetime" placeholder="Select date and time" required>
           </div>
-          <input
-            type="number"
-            id="number_of_covers"
-            name="number_of_covers"
-            placeholder="1"
-            required
-          />
+          <div class="form__field form__field__required number-of-covers">
+            <div class="form__field__required">
+              <label for="number_of_covers">Guests</label><span class="required-field-symbol">*</span>
+            </div>
+            <input
+              type="number"
+              id="number_of_covers"
+              name="number_of_covers"
+              placeholder="1"
+              required
+            />
+          </div>
         </div>
+        <section class="customer-details">
+          <div class="form__field__group">
+            <div class="form__field">
+              <label for="first_name">First name</label>
+              <input
+                type="text"
+                id="first_name"
+                name="first_name"
+                placeholder="Enter your first name"
+              />
+            </div>
+            <div class="form__field last-name">
+              <label for="last_name">Last name</label>
+              <input
+                type="text"
+                id="last_name"
+                name="last_name"
+                placeholder="Enter your last name"
+              />
+            </div>
+          </div>
+          <div class="form__field">
+            <label for="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="Enter your email address"
+            />
+          </div>
+          <div class="form__field">
+            <label for="phone">Phone number</label>
+            <input
+              type="phone"
+              id="phone"
+              name="phone"
+              placeholder="Enter your phone number"
+            />
+          </div>
+        </section>
         <div class="form__field">
           <label for="notes">Notes</label>
           <textarea
