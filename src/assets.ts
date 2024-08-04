@@ -85,4 +85,11 @@ export const styles = `
   .last-name {
     margin-left: 1rem;
   }
+  .info {
+    margin-bottom: 0.5rem;
+  }
+  .muted {
+    font-size: 0.75rem;
+    color: grey;
+  }
 `;

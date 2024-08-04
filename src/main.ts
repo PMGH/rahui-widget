@@ -111,7 +111,10 @@ class RahuiWidget {
             </div>
           </div>
           <div class="form__field">
-            <label for="email">Email</label>
+            <div class="form__field__required">
+              <label for="email">Email</label><span class="required-field-symbol">*</span>
+            </div>
+            <p class="info muted">We send the booking confirmation to this email address</p>
             <input
               type="email"
               id="email"
@@ -121,6 +124,7 @@ class RahuiWidget {
           </div>
           <div class="form__field">
             <label for="phone">Phone number</label>
+            <p class="info muted">We may use this to contact you about your booking</p>
             <input
               type="phone"
               id="phone"
