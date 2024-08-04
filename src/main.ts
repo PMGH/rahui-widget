@@ -6,6 +6,7 @@ class RahuiWidget {
   constructor() {
     this.initialize();
     this.injectStyles();
+    this.setupEventListenersForRequiredFields();
   }
 
   widgetContainer = null as unknown as HTMLDivElement;
@@ -70,7 +71,16 @@ class RahuiWidget {
   }
 
   async forwardFormSubmissionToServer(payload: Payload) {
-    console.log("forwardFormSubmissionToServer:", { payload });
+    const base_url = import.meta.env.VITE_RAHUI_BOOKING_SERVER_URL;
+    const url = `${base_url}/widget-form-submission`;
+    console.log("forwardFormSubmissionToServer:", { base_url, payload });
+    if (url && payload) {
+      const response = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+      console.log({ response });
+    }
   }
 
   createWidgetContent() {
@@ -103,21 +113,27 @@ class RahuiWidget {
         <section class="customer-details">
           <div class="form__field__group">
             <div class="form__field">
-              <label for="first_name">First name</label>
+              <div class="form__field__required">
+                <label for="first_name">First name</label><span class="required-field-symbol" id="customer_first_name_required_symbol">*</span>
+              </div>
               <input
                 type="text"
-                id="first_name"
+                id="customer_first_name"
                 name="first_name"
                 placeholder="Enter your first name"
+                required
               />
             </div>
             <div class="form__field last-name">
-              <label for="last_name">Last name</label>
+              <div class="form__field__required">
+                <label for="last_name">Last name</label><span class="required-field-symbol" id="customer_last_name_required_symbol">*</span>
+              </div>
               <input
                 type="text"
-                id="last_name"
+                id="customer_last_name"
                 name="last_name"
                 placeholder="Enter your last name"
+                required
               />
             </div>
           </div>
@@ -162,6 +178,71 @@ class RahuiWidget {
     const styleTag = document.createElement("style");
     styleTag.innerHTML = styles.replace(/^\s+|\n/gm, "");
     document.head.appendChild(styleTag);
+  }
+
+  setupEventListenersForRequiredFields() {
+    const firstNameField = document.getElementById("customer_first_name");
+    const lastNameField = document.getElementById("customer_last_name");
+    [firstNameField, lastNameField].forEach((field) => {
+      const relatedFields = [
+        firstNameField,
+        lastNameField,
+      ] as HTMLInputElement[];
+      this.handleToggleRequiredFields({ relatedFields });
+
+      if (field) {
+        field.addEventListener("change", () =>
+          this.handleToggleRequiredFields({ relatedFields })
+        );
+      }
+    });
+  }
+
+  getRequiredSymbolFor(field: HTMLElement) {
+    const selector = field.id + "_required_symbol";
+    return document.getElementById(selector);
+  }
+
+  toggleRequiredSymbolFor(field: HTMLElement) {
+    const requiredSymbol = this.getRequiredSymbolFor(field);
+    if (requiredSymbol) {
+      requiredSymbol.style.display = "none";
+    }
+  }
+
+  handleToggleRequiredFields({
+    relatedFields,
+  }: {
+    relatedFields: HTMLInputElement[];
+  }) {
+    const [firstNameField, lastNameField] = relatedFields;
+    const isFieldsFilled = relatedFields.every(
+      (field) => field.value.length > 0
+    );
+    const isFieldsEmpty = relatedFields.every(
+      (field) => field.value.length === 0
+    );
+
+    // 1. Both have values or neither have values
+    if (isFieldsFilled || isFieldsEmpty) {
+      relatedFields.forEach((field) => {
+        const requiredSymbol = this.getRequiredSymbolFor(field);
+        if (requiredSymbol) {
+          requiredSymbol.style.display = "inline";
+        }
+        field.required = true;
+      });
+    }
+    // 2. firstName has value and lastName empty
+    if (firstNameField.value.length > 0 && lastNameField.value.length === 0) {
+      this.toggleRequiredSymbolFor(lastNameField);
+      lastNameField.required = false;
+    }
+    // 3. lastName has value and firstName empty
+    if (lastNameField.value.length > 0 && firstNameField.value.length === 0) {
+      this.toggleRequiredSymbolFor(firstNameField);
+      firstNameField.required = false;
+    }
   }
 }
 
