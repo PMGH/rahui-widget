@@ -15,7 +15,12 @@ class RahuiWidget {
   widgetContainer = null as unknown as HTMLDivElement;
   formId = "rahui-booking-form";
   form = null as unknown as HTMLElement | null;
-  datetimePickerId = "datetime-picker";
+  datePickerId = "date-picker";
+  timePickerId = "time-picker";
+  datePickerHiddenInputId = "hidden-date-input";
+
+  // Widget content
+  heading = "Book a table";
 
   async initialize() {
     /**
@@ -52,17 +57,24 @@ class RahuiWidget {
      * https://sqrrl.github.io/wc-datepicker/
      */
     defineCustomElements();
-    const datepicker = document.getElementById(
-      this.datetimePickerId
-    ) as Datepicker;
-
+    const datepicker = document.getElementById(this.datePickerId) as Datepicker;
     if (datepicker) {
+      // Disable dates before today
       datepicker.disableDate = function (date: Date) {
         const now = new Date();
         const comparableDatetimeNow = new Date(now.setHours(0, 0, 0));
         const comparableDatetime = new Date(date.setHours(15, 0, 0));
         return comparableDatetime.getTime() < comparableDatetimeNow.getTime();
       };
+      // Set selected date as hidden input value
+      datepicker.addEventListener("selectDate", (event: any) => {
+        const datePickerHiddenInput = document.getElementById(
+          this.datePickerHiddenInputId
+        ) as HTMLInputElement;
+        if (datePickerHiddenInput) {
+          datePickerHiddenInput.value = event.detail;
+        }
+      });
     }
   }
 
@@ -97,16 +109,19 @@ class RahuiWidget {
   createWidgetContent() {
     this.widgetContainer.innerHTML = `
       <header class="widget__header">
-        <h3>Book a table</h3>
+        <h3>${this.heading}</h3>
       </header>
+
       <form id="${this.formId}">
         <input type="hidden" id="widget-submission" name="widget-submission" value="true">
         <div class="form__field__group">
           <div class="form__field">
             <div class="form__field__required">
               <label for="datetime">Booking (date and time)</label><span class="required-field-symbol">*</span>
+              <input type="hidden" id="${this.datePickerHiddenInputId}" name="date">
             </div>
-            <wc-datepicker first-day-of-week="1" id="${this.datetimePickerId}"></wc-datepicker>
+            <wc-datepicker first-day-of-week="1" id="${this.datePickerId}"></wc-datepicker>
+            <input type="time" id="${this.timePickerId}" name="time" required />
           </div>
           <div class="form__field form__field__required number-of-covers">
             <div class="form__field__required">
@@ -121,6 +136,7 @@ class RahuiWidget {
             />
           </div>
         </div>
+
         <section class="customer-details">
           <div class="form__field__group">
             <div class="form__field">
@@ -171,6 +187,7 @@ class RahuiWidget {
             />
           </div>
         </section>
+
         <div class="form__field">
           <label for="notes">Notes</label>
           <textarea
@@ -180,6 +197,7 @@ class RahuiWidget {
             rows="6"
           ></textarea>
         </div>
+
         <button type="submit">Create Booking</button>
       </form>
     `;

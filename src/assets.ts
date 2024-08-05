@@ -18,7 +18,7 @@ export const styles = `
     box-sizing: border-box;
   }
   .widget__header {
-    padding: 1rem 2rem 1.5rem;
+    padding: 1.5rem 2rem;
     background-color: #000;
     color: #fff;
     border-top-left-radius: 10px;
@@ -75,7 +75,7 @@ export const styles = `
     cursor: pointer;
   }
   form button:hover {
-    background-color: rgba(0, 0, 0, 95%);
+    background-color: #1d1d20;
   }
   .form__field__group {
     display: flex;
