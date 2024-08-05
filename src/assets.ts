@@ -78,12 +78,8 @@ export const styles = `
   }
   .form__field__group {
     display: flex;
-    flex-flow: row nowrap;
+    flex-flow: row wrap;
     align-items: center;
-  }
-  .number-of-covers,
-  .last-name {
-    margin-left: 1rem;
   }
   .info {
     margin-bottom: 0.5rem;
@@ -91,5 +87,23 @@ export const styles = `
   .muted {
     font-size: 0.75rem;
     color: grey;
+  }
+  wc-datepicker {
+    justify-content: center;
+  }
+  @media screen and (min-width: 768px) {
+    .form__field__group {
+      flex-flow: row nowrap;
+    }
+    wc-datepicker {
+      justify-content: flex-start;
+    }
+    .number-of-covers {
+      align-self: flex-start;
+    }
+    .number-of-covers,
+    .last-name {
+      margin-left: 1rem;
+    }
   }
 `;
