@@ -94,9 +94,20 @@ class RahuiWidget {
   }
 
   async forwardFormSubmissionToServer(payload: Payload) {
-    const base_url = import.meta.env.VITE_RAHUI_BOOKING_SERVER_URL;
-    const url = `${base_url}/widget-form-submission`;
-    console.log("forwardFormSubmissionToServer:", { base_url, payload });
+    const {
+      VITE_IS_PRODUCTION,
+      VITE_RAHUI_BOOKING_LOCAL_SERVER_URL,
+      VITE_RAHUI_BOOKING_PRODUCTION_SERVER_URL,
+      VITE_RAHUI_BOOKING_WIDGET_CREATE_BOOKING_PATH,
+    } = import.meta.env;
+
+    const base_url =
+      VITE_IS_PRODUCTION === "true"
+        ? VITE_RAHUI_BOOKING_PRODUCTION_SERVER_URL
+        : VITE_RAHUI_BOOKING_LOCAL_SERVER_URL;
+    const url = `${base_url}/${VITE_RAHUI_BOOKING_WIDGET_CREATE_BOOKING_PATH}`;
+    console.log("forwardFormSubmissionToServer:", { url, payload });
+
     if (url && payload) {
       const response = await fetch(url, {
         method: "POST",
