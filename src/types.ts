@@ -8,3 +8,7 @@ export type Payload = {
   number_of_covers: string;
   phone: string;
 };
+
+export type Datepicker = HTMLElement & {
+  disableDate: (date: Date) => boolean;
+};

@@ -1,6 +1,9 @@
-import flatpickr from "flatpickr";
 import { styles } from "./assets.js";
-import { type Payload } from "./types";
+import { Datepicker, type Payload } from "./types";
+import { defineCustomElements } from "wc-datepicker/dist/loader";
+
+// Importing a theme is optional.
+import "wc-datepicker/dist/themes/light.css";
 
 class RahuiWidget {
   constructor() {
@@ -45,14 +48,21 @@ class RahuiWidget {
       this.form.addEventListener("submit", this.formSubmit.bind(this));
 
     /**
-     * Setup datetime picker using flatpickr
+     * Setup datetime picker using wc-datepicker
+     * https://sqrrl.github.io/wc-datepicker/
      */
-    flatpickr(`#${this.datetimePickerId}`, {
-      enableTime: true,
-      time_24hr: true,
-      minDate: "today",
-      dateFormat: "Y-m-d H:i",
-    });
+    defineCustomElements();
+    const datepicker = document.getElementById(
+      this.datetimePickerId
+    ) as Datepicker;
+
+    if (datepicker) {
+      datepicker.disableDate = function (date: Date) {
+        const now = new Date();
+        const comparableDatetime = new Date(now.setHours(1, 0, 0));
+        return comparableDatetime < date;
+      };
+    }
   }
 
   async formSubmit(e: any) {
@@ -95,7 +105,7 @@ class RahuiWidget {
             <div class="form__field__required">
               <label for="datetime">Booking (date and time)</label><span class="required-field-symbol">*</span>
             </div>
-            <input id="${this.datetimePickerId}" name="datetime" placeholder="Select date and time" required>
+            <wc-datepicker first-day-of-week="1" id="${this.datetimePickerId}"></wc-datepicker>
           </div>
           <div class="form__field form__field__required number-of-covers">
             <div class="form__field__required">
