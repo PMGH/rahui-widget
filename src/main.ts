@@ -59,8 +59,9 @@ class RahuiWidget {
     if (datepicker) {
       datepicker.disableDate = function (date: Date) {
         const now = new Date();
-        const comparableDatetime = new Date(now.setHours(1, 0, 0));
-        return comparableDatetime < date;
+        const comparableDatetimeNow = new Date(now.setHours(0, 0, 0));
+        const comparableDatetime = new Date(date.setHours(15, 0, 0));
+        return comparableDatetime.getTime() < comparableDatetimeNow.getTime();
       };
     }
   }
