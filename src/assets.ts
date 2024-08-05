@@ -1,6 +1,7 @@
 export const styles = `
   .widget__container * {
     box-sizing: border-box;
+    font-size: 16px;
   }        
   h3, p, input {
     margin: 0;
@@ -12,7 +13,7 @@ export const styles = `
     overflow: auto;
     transition: max-height .2s ease;
     font-family: Helvetica, Arial ,sans-serif;
-    background-color: #e6e6e6a6;
+    background-color: white;
     border-radius: 10px;
     box-sizing: border-box;
   }
@@ -40,7 +41,7 @@ export const styles = `
   }
   .form__field label {
     margin-bottom: 8px;
-    font-size: 14px;
+    font-size: 1rem;
   }
   .form__field__required {
     display: flex;
@@ -90,6 +91,21 @@ export const styles = `
   }
   wc-datepicker {
     justify-content: center;
+  }
+  .wc-datepicker__previous-month-button:hover,
+  .wc-datepicker__next-month-button:hover {
+    color: white;
+  }
+  .wc-datepicker__current-month {
+    align-items: center;
+  }
+  select.wc-datepicker__month-select {
+    font-weight: bold;
+    text-align: center;
+  }
+  input.wc-datepicker__year-select {
+    height: 32px;
+    font-weight: bold;
   }
   @media screen and (min-width: 768px) {
     .form__field__group {
