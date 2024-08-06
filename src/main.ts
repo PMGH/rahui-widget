@@ -1,6 +1,12 @@
 import { styles } from "./assets.js";
 import { getWidgetContent } from "./content.js";
-import { Booking, Datepicker, WidgetConfig, type Payload } from "./types";
+import {
+  Booking,
+  Datepicker,
+  WidgetConfig,
+  WidgetSettings,
+  type Payload,
+} from "./types";
 import { defineCustomElements } from "wc-datepicker/dist/loader";
 
 // Importing a theme is optional.
@@ -81,6 +87,8 @@ class RahuiWidget {
         }
       });
     }
+
+    this.getWidgetSettings();
   }
 
   async formSubmit(e: any) {
@@ -121,6 +129,37 @@ class RahuiWidget {
     };
 
     await this.forwardFormSubmissionToServer(payload);
+  }
+
+  async getWidgetSettings() {
+    const {
+      VITE_IS_PRODUCTION,
+      VITE_RAHUI_BOOKING_LOCAL_SERVER_URL,
+      VITE_RAHUI_BOOKING_PRODUCTION_SERVER_URL,
+      VITE_RAHUI_BOOKING_WIDGET_SETTINGS_PATH,
+    } = import.meta.env;
+
+    const base_url =
+      VITE_IS_PRODUCTION === "true"
+        ? VITE_RAHUI_BOOKING_PRODUCTION_SERVER_URL
+        : VITE_RAHUI_BOOKING_LOCAL_SERVER_URL;
+    const url = `${base_url}/${VITE_RAHUI_BOOKING_WIDGET_SETTINGS_PATH}`;
+
+    const response = await fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this.apiKey}`,
+      },
+      method: "GET",
+    });
+
+    if (response.status === 200) {
+      const settings = (await response.json()) as WidgetSettings;
+      console.log({ settings });
+      // this.applySettings(settings);
+    } else {
+      console.error({ body: await response.json() });
+    }
   }
 
   async forwardFormSubmissionToServer(payload: Payload) {

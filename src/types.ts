@@ -40,3 +40,5 @@ export type WidgetContentProps = {
   datePickerId: string;
   timePickerId: string;
 };
+
+export type WidgetSettings = any;
