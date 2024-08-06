@@ -110,6 +110,9 @@ class RahuiWidget {
 
     if (url && payload) {
       const response = await fetch(url, {
+        headers: {
+          "Content-Type": "application/json",
+        },
         method: "POST",
         body: JSON.stringify(payload),
       });
