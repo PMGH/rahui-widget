@@ -42,3 +42,5 @@ export type WidgetContentProps = {
 };
 
 export type WidgetSettings = any;
+export type OpeningHour = any;
+export type OpeningHours = OpeningHour[];

@@ -3,6 +3,7 @@ import { getWidgetContent } from "./content.js";
 import {
   Booking,
   Datepicker,
+  OpeningHours,
   WidgetConfig,
   WidgetSettings,
   type Payload,
@@ -89,6 +90,7 @@ class RahuiWidget {
     }
 
     this.getWidgetSettings();
+    this.getOpeningHours();
   }
 
   async formSubmit(e: any) {
@@ -157,6 +159,37 @@ class RahuiWidget {
       const settings = (await response.json()) as WidgetSettings;
       console.log({ settings });
       // this.applySettings(settings);
+    } else {
+      console.error({ body: await response.json() });
+    }
+  }
+
+  async getOpeningHours() {
+    const {
+      VITE_IS_PRODUCTION,
+      VITE_RAHUI_BOOKING_LOCAL_SERVER_URL,
+      VITE_RAHUI_BOOKING_PRODUCTION_SERVER_URL,
+      VITE_RAHUI_BOOKING_WIDGET_OPENING_HOURS_PATH,
+    } = import.meta.env;
+
+    const base_url =
+      VITE_IS_PRODUCTION === "true"
+        ? VITE_RAHUI_BOOKING_PRODUCTION_SERVER_URL
+        : VITE_RAHUI_BOOKING_LOCAL_SERVER_URL;
+    const url = `${base_url}/${VITE_RAHUI_BOOKING_WIDGET_OPENING_HOURS_PATH}`;
+
+    const response = await fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this.apiKey}`,
+      },
+      method: "GET",
+    });
+
+    if (response.status === 200) {
+      const openingHours = (await response.json()) as OpeningHours;
+      console.log({ openingHours });
+      // this.applyOpeningHours(openingHours);
     } else {
       console.error({ body: await response.json() });
     }
