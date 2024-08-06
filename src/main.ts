@@ -1,23 +1,25 @@
 import { styles } from "./assets.js";
-import { Datepicker, type Payload } from "./types";
+import { Datepicker, WidgetConfig, type Payload } from "./types";
 import { defineCustomElements } from "wc-datepicker/dist/loader";
 
 // Importing a theme is optional.
 import "wc-datepicker/dist/themes/light.css";
 
 class RahuiWidget {
-  constructor() {
-    this.initialize();
-    this.injectStyles();
-    this.setupEventListenersForRequiredFields();
-  }
-
+  apiKey = "";
   widgetContainer = null as unknown as HTMLDivElement;
   formId = "rahui-booking-form";
   form = null as unknown as HTMLElement | null;
   datePickerId = "date-picker";
   timePickerId = "time-picker";
   datePickerHiddenInputId = "hidden-date-input";
+
+  constructor({ apiKey }: WidgetConfig) {
+    this.apiKey = apiKey;
+    this.initialize();
+    this.injectStyles();
+    this.setupEventListenersForRequiredFields();
+  }
 
   // Widget content
   heading = "Book a table";
@@ -81,15 +83,40 @@ class RahuiWidget {
   async formSubmit(e: any) {
     e.preventDefault();
     const data = new FormData(e.target);
-    const parsedData = Object.fromEntries(data.entries()) as Payload;
-    const datetime = new Date(parsedData.datetime as string);
+    const parsedData = Object.fromEntries(data.entries());
+
+    // Booking
+    const date = new Date(parsedData["booking[date]"] as string);
+    const time = parsedData["booking[time]"] as string;
+    const [hours, minutes] = time.split(":");
+    const datetime = new Date(
+      date.setHours(parseInt(hours), parseInt(minutes), 0)
+    );
     const datetimeUTC = datetime.toUTCString();
-    console.log({ parsedData });
+    const numberOfCovers = parsedData["booking[number_of_covers]"].toString();
+    const notes = parsedData["booking[notes]"].toString();
+
+    // Customer
+    const firstName = parsedData["customer[first_name]"].toString();
+    const lastName = parsedData["customer[last_name]"].toString();
+    const email = parsedData["customer[email]"].toString();
+    const phone = parsedData["customer[phone]"].toString();
 
     const payload: Payload = {
-      ...parsedData,
-      datetime: datetimeUTC,
+      "widget-submission": true,
+      booking: {
+        datetime: datetimeUTC,
+        number_of_covers: numberOfCovers,
+        notes,
+      },
+      customer: {
+        first_name: firstName,
+        last_name: lastName,
+        email,
+        phone,
+      },
     };
+
     await this.forwardFormSubmissionToServer(payload);
   }
 
@@ -112,6 +139,7 @@ class RahuiWidget {
       const response = await fetch(url, {
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${this.apiKey}`,
         },
         method: "POST",
         body: JSON.stringify(payload),
@@ -131,20 +159,20 @@ class RahuiWidget {
         <div class="form__field__group">
           <div class="form__field">
             <div class="form__field__required">
-              <label for="datetime">Booking (date and time)</label><span class="required-field-symbol">*</span>
-              <input type="hidden" id="${this.datePickerHiddenInputId}" name="date">
+              <label for="booking[date]">Booking (date and time)</label><span class="required-field-symbol">*</span>
+              <input type="hidden" id="${this.datePickerHiddenInputId}" name="booking[date]">
             </div>
-            <wc-datepicker first-day-of-week="1" id="${this.datePickerId}"></wc-datepicker>
-            <input type="time" id="${this.timePickerId}" name="time" required />
+            <wc-datepicker id="${this.datePickerId}" first-day-of-week="1" id="${this.datePickerId}"></wc-datepicker>
+            <input type="time" id="${this.timePickerId}" name="booking[time]" required />
           </div>
           <div class="form__field form__field__required number-of-covers">
             <div class="form__field__required">
-              <label for="number_of_covers">Guests</label><span class="required-field-symbol">*</span>
+              <label for="booking[number_of_covers]">Guests</label><span class="required-field-symbol">*</span>
             </div>
             <input
               type="number"
               id="number_of_covers"
-              name="number_of_covers"
+              name="booking[number_of_covers]"
               placeholder="1"
               required
             />
@@ -155,24 +183,24 @@ class RahuiWidget {
           <div class="form__field__group">
             <div class="form__field">
               <div class="form__field__required">
-                <label for="first_name">First name</label><span class="required-field-symbol" id="customer_first_name_required_symbol">*</span>
+                <label for="customer[first_name]">First name</label><span class="required-field-symbol" id="customer_first_name_required_symbol">*</span>
               </div>
               <input
                 type="text"
                 id="customer_first_name"
-                name="first_name"
+                name="customer[first_name]"
                 placeholder="Enter your first name"
                 required
               />
             </div>
             <div class="form__field last-name">
               <div class="form__field__required">
-                <label for="last_name">Last name</label><span class="required-field-symbol" id="customer_last_name_required_symbol">*</span>
+                <label for="customer[last_name]">Last name</label><span class="required-field-symbol" id="customer_last_name_required_symbol">*</span>
               </div>
               <input
                 type="text"
                 id="customer_last_name"
-                name="last_name"
+                name="customer[last_name]"
                 placeholder="Enter your last name"
                 required
               />
@@ -180,33 +208,33 @@ class RahuiWidget {
           </div>
           <div class="form__field">
             <div class="form__field__required">
-              <label for="email">Email</label><span class="required-field-symbol">*</span>
+              <label for="customer[email]">Email</label><span class="required-field-symbol">*</span>
             </div>
             <p class="info muted">We send the booking confirmation to this email address</p>
             <input
               type="email"
               id="email"
-              name="email"
+              name="customer[email]"
               placeholder="Enter your email address"
             />
           </div>
           <div class="form__field">
-            <label for="phone">Phone number</label>
+            <label for="customer[phone]">Phone number</label>
             <p class="info muted">We may use this to contact you about your booking</p>
             <input
               type="phone"
               id="phone"
-              name="phone"
+              name="customer[phone]"
               placeholder="Enter your phone number"
             />
           </div>
         </section>
 
         <div class="form__field">
-          <label for="notes">Notes</label>
+          <label for="booking[notes]">Notes</label>
           <textarea
             id="notes"
-            name="notes"
+            name="booking[notes]"
             placeholder="Enter any additional notes"
             rows="6"
           ></textarea>
@@ -289,8 +317,10 @@ class RahuiWidget {
   }
 }
 
-function initializeWidget() {
-  return new RahuiWidget();
+function initializeWidget(config: WidgetConfig) {
+  return new RahuiWidget(config);
 }
 
-initializeWidget();
+initializeWidget({
+  apiKey: "f36abb9c-3e99-4db3-b361-ebbb3ccc9103",
+});
