@@ -13,7 +13,7 @@ class RahuiWidget {
   datePickerId = "date-picker";
   timePickerId = "time-picker";
   datePickerHiddenInputId = "hidden-date-input";
-  confirmationElementId = "confirmation-message";
+  confirmationContainerElementId = "confirmation-message-container";
   errorMessageElementId = "error-message";
 
   // Widget content
@@ -167,11 +167,11 @@ class RahuiWidget {
 
   showConfirmationMessage(_booking: Booking) {
     const confirmationElement = document.getElementById(
-      this.confirmationElementId
+      this.confirmationContainerElementId
     );
     if (!confirmationElement) return;
 
-    confirmationElement.style.display = "block";
+    confirmationElement.style.display = "flex";
     confirmationElement.scrollIntoView({
       behavior: "smooth",
       block: "center",
@@ -205,7 +205,12 @@ class RahuiWidget {
 
       <div id="error-message">Sorry, something went wrong. Please try again.</div>
 
-      <div id="confirmation-message">Booking confirmed!</div>
+      <div id="confirmation-message-container">
+        <div class="wrapper">
+          <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"> <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/> <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>
+        </div>
+        <h3 id="confirmation-message">Booking confirmed!</h3>
+      </div>
 
       <form id="${this.formId}">
         <input type="hidden" id="widget-submission" name="widget-submission" value="true">
