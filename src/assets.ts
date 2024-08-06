@@ -32,7 +32,6 @@ export const styles = `
   }
   #confirmation-message-container {
     color: green;
-    border: 2px solid green;
     display: flex;
     flex-direction: column;
     justify-content: center;
