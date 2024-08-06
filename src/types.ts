@@ -20,3 +20,15 @@ export type Datepicker = HTMLElement & {
 export type WidgetConfig = {
   apiKey: string;
 };
+
+export type Booking = {
+  created_at: string;
+  customer_id: string;
+  datetime: string;
+  id: string;
+  notes: string;
+  number_of_covers: number;
+  updated_at: string;
+  url: string;
+  user_id: null;
+};

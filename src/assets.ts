@@ -30,6 +30,22 @@ export const styles = `
     font-weight: 400;
     margin-bottom: 8px;
   }
+  #confirmation-message,
+  #error-message {
+    display: none;
+    margin: 2rem 1rem 1rem 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 5px;
+    font-weight: bold;
+  }
+  #confirmation-message {
+    color: green;
+    border: 2px solid green;
+  }
+  #error-message {
+    color: red;
+    border: 2px solid red;
+  }
   form {
     padding: 2rem 1rem 1.5rem;
   }

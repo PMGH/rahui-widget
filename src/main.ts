@@ -1,5 +1,5 @@
 import { styles } from "./assets.js";
-import { Datepicker, WidgetConfig, type Payload } from "./types";
+import { Booking, Datepicker, WidgetConfig, type Payload } from "./types";
 import { defineCustomElements } from "wc-datepicker/dist/loader";
 
 // Importing a theme is optional.
@@ -8,11 +8,16 @@ import "wc-datepicker/dist/themes/light.css";
 class RahuiWidget {
   apiKey = "";
   widgetContainer = null as unknown as HTMLDivElement;
-  formId = "rahui-booking-form";
   form = null as unknown as HTMLElement | null;
+  formId = "rahui-booking-form";
   datePickerId = "date-picker";
   timePickerId = "time-picker";
   datePickerHiddenInputId = "hidden-date-input";
+  confirmationElementId = "confirmation-message";
+  errorMessageElementId = "error-message";
+
+  // Widget content
+  heading = "Book a table";
 
   constructor({ apiKey }: WidgetConfig) {
     this.apiKey = apiKey;
@@ -20,9 +25,6 @@ class RahuiWidget {
     this.injectStyles();
     this.setupEventListenersForRequiredFields();
   }
-
-  // Widget content
-  heading = "Book a table";
 
   async initialize() {
     /**
@@ -144,8 +146,55 @@ class RahuiWidget {
         method: "POST",
         body: JSON.stringify(payload),
       });
-      console.log({ response });
+      this.hideErrorMessage();
+      if (response.status === 201) {
+        const booking = (await response.json()) as Booking;
+        this.hideForm();
+        this.showConfirmationMessage(booking);
+      } else {
+        console.error({ body: await response.json() });
+        this.showErrorMessage();
+      }
     }
+  }
+
+  hideForm() {
+    const form = document.getElementById(this.formId);
+    if (!form) return;
+
+    form.style.visibility = "hidden";
+  }
+
+  showConfirmationMessage(_booking: Booking) {
+    const confirmationElement = document.getElementById(
+      this.confirmationElementId
+    );
+    if (!confirmationElement) return;
+
+    confirmationElement.style.display = "block";
+    confirmationElement.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+      inline: "center",
+    });
+  }
+
+  hideErrorMessage() {
+    const errorMessageElement = document.getElementById(
+      this.errorMessageElementId
+    );
+    if (!errorMessageElement) return;
+
+    errorMessageElement.style.display = "none";
+  }
+
+  showErrorMessage() {
+    const errorMessageElement = document.getElementById(
+      this.errorMessageElementId
+    );
+    if (!errorMessageElement) return;
+
+    errorMessageElement.style.display = "block";
   }
 
   createWidgetContent() {
@@ -153,6 +202,10 @@ class RahuiWidget {
       <header class="widget__header">
         <h3>${this.heading}</h3>
       </header>
+
+      <div id="error-message">Sorry, something went wrong. Please try again.</div>
+
+      <div id="confirmation-message">Booking confirmed!</div>
 
       <form id="${this.formId}">
         <input type="hidden" id="widget-submission" name="widget-submission" value="true">
@@ -174,6 +227,7 @@ class RahuiWidget {
               id="number_of_covers"
               name="booking[number_of_covers]"
               placeholder="1"
+              min="1"
               required
             />
           </div>
