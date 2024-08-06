@@ -322,5 +322,5 @@ function initializeWidget(config: WidgetConfig) {
 }
 
 initializeWidget({
-  apiKey: "f36abb9c-3e99-4db3-b361-ebbb3ccc9103",
+  apiKey: "b7511851-0a8b-4ee4-b14c-09e33d453cfd",
 });
