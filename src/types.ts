@@ -32,3 +32,11 @@ export type Booking = {
   url: string;
   user_id: null;
 };
+
+export type WidgetContentProps = {
+  heading: string;
+  formId: string;
+  datePickerHiddenInputId: string;
+  datePickerId: string;
+  timePickerId: string;
+};
