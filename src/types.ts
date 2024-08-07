@@ -42,7 +42,6 @@ export type WidgetContentProps = {
 };
 
 export type WidgetSettings = {
-  covers_threshold: number;
   max_covers_per_booking: number;
 };
 export type OpeningHour = {
