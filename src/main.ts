@@ -236,9 +236,7 @@ class RahuiWidget {
         }
       });
       hoursSelect.innerHTML = "";
-      validOptions.forEach((option) => {
-        hoursSelect.appendChild(option);
-      });
+      hoursSelect.append(...validOptions);
     }
   }
 
