@@ -220,15 +220,24 @@ class RahuiWidget {
   }
 
   applyOpeningHours(openingHours: OpeningHours) {
-    const hoursInput = document.getElementById(this.timePickerHoursId);
-    if (hoursInput && openingHours) {
-      const { open_at, close_at, day } = openingHours?.opening_hours;
-      console.log({ open_at, close_at, day });
-      const options = hoursInput.querySelectorAll("option");
+    const hoursSelect = document.getElementById(this.timePickerHoursId);
+    if (hoursSelect && openingHours) {
+      const { open_at, close_at } = openingHours?.opening_hours;
+      const options = Array.from(Array(23).keys()).map((index) => {
+        const option = document.createElement("option");
+        option.value = index.toString();
+        option.innerHTML = index.toString();
+        return option;
+      });
+      const validOptions: HTMLOptionElement[] = [];
       options.forEach((option) => {
-        if (option.value < open_at || option.value > close_at) {
-          option.disabled = true;
+        if (option.value >= open_at && option.value <= close_at) {
+          validOptions.push(option);
         }
+      });
+      hoursSelect.innerHTML = "";
+      validOptions.forEach((option) => {
+        hoursSelect.appendChild(option);
       });
     }
   }
