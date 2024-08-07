@@ -230,8 +230,9 @@ class RahuiWidget {
       const { open_at, close_at } = openingHours?.opening_hours;
       const options = Array.from(Array(23).keys()).map((index) => {
         const option = document.createElement("option");
-        option.value = index.toString();
-        option.innerHTML = index.toString();
+        option.value = String(index);
+        option.innerHTML =
+          index < 10 ? String(index).padStart(2, "0") : String(index);
         return option;
       });
       const validOptions: HTMLOptionElement[] = [];
