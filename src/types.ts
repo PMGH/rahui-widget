@@ -41,6 +41,13 @@ export type WidgetContentProps = {
   timePickerId: string;
 };
 
-export type WidgetSettings = any;
-export type OpeningHour = any;
+export type WidgetSettings = {
+  covers_threshold: number;
+  max_covers_per_booking: number;
+};
+export type OpeningHour = {
+  close_at: string;
+  day: string;
+  open_at: string;
+};
 export type OpeningHours = OpeningHour[];

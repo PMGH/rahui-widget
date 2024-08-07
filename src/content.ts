@@ -33,7 +33,7 @@ export const getWidgetContent = ({
       </div>
       <div class="form__field form__field__required number-of-covers">
         <div class="form__field__required">
-          <label for="booking[number_of_covers]">Guests</label><span class="required-field-symbol">*</span>
+          <label id="number_of_covers_label" for="booking[number_of_covers]">Guests</label><span class="required-field-symbol">*</span>
         </div>
         <input
           type="number"

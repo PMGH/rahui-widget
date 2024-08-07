@@ -158,9 +158,28 @@ class RahuiWidget {
     if (response.status === 200) {
       const settings = (await response.json()) as WidgetSettings;
       console.log({ settings });
-      // this.applySettings(settings);
+      this.applySettings(settings);
     } else {
       console.error({ body: await response.json() });
+    }
+  }
+
+  applySettings(settings: WidgetSettings) {
+    this.setMaxCoversPerBooking(settings);
+  }
+
+  setMaxCoversPerBooking(settings: WidgetSettings) {
+    const maxCoversPerBooking = settings.max_covers_per_booking;
+    const numberOfCoversLabel = document.getElementById(
+      "number_of_covers_label"
+    );
+    const numberOfCoversInput = document.getElementById(
+      "number_of_covers"
+    ) as HTMLInputElement;
+    if (maxCoversPerBooking && numberOfCoversLabel && numberOfCoversInput) {
+      numberOfCoversLabel.textContent =
+        numberOfCoversLabel.textContent + ` (max: ${maxCoversPerBooking})`;
+      numberOfCoversInput.max = maxCoversPerBooking.toString();
     }
   }
 
