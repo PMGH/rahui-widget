@@ -87,6 +87,7 @@ class RahuiWidget {
         if (datePickerHiddenInput) {
           datePickerHiddenInput.value = event.detail;
         }
+        this.getOpeningHours(event.detail);
       });
     }
 
@@ -183,7 +184,7 @@ class RahuiWidget {
     }
   }
 
-  async getOpeningHours() {
+  async getOpeningHours(date = undefined) {
     const {
       VITE_IS_PRODUCTION,
       VITE_RAHUI_BOOKING_LOCAL_SERVER_URL,
@@ -195,7 +196,12 @@ class RahuiWidget {
       VITE_IS_PRODUCTION === "true"
         ? VITE_RAHUI_BOOKING_PRODUCTION_SERVER_URL
         : VITE_RAHUI_BOOKING_LOCAL_SERVER_URL;
-    const url = `${base_url}/${VITE_RAHUI_BOOKING_WIDGET_OPENING_HOURS_PATH}`;
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const query =
+      date && timezone ? `?date=${date}&timezone=${timezone}` : undefined;
+    const url = query
+      ? `${base_url}/${VITE_RAHUI_BOOKING_WIDGET_OPENING_HOURS_PATH}${query}`
+      : `${base_url}/${VITE_RAHUI_BOOKING_WIDGET_OPENING_HOURS_PATH}`;
 
     const response = await fetch(url, {
       headers: {
@@ -214,12 +220,11 @@ class RahuiWidget {
   }
 
   applyOpeningHours(openingHours: OpeningHours) {
-    console.log({ openingHours });
     const hoursInput = document.getElementById(this.timePickerHoursId);
     if (hoursInput && openingHours) {
-      const { open_at, close_at } = openingHours?.opening_hours;
+      const { open_at, close_at, day } = openingHours?.opening_hours;
+      console.log({ open_at, close_at, day });
       const options = hoursInput.querySelectorAll("option");
-      console.log({ hoursInput, open_at, close_at, options });
       options.forEach((option) => {
         if (option.value < open_at || option.value > close_at) {
           option.disabled = true;
@@ -241,7 +246,6 @@ class RahuiWidget {
         ? VITE_RAHUI_BOOKING_PRODUCTION_SERVER_URL
         : VITE_RAHUI_BOOKING_LOCAL_SERVER_URL;
     const url = `${base_url}/${VITE_RAHUI_BOOKING_WIDGET_CREATE_BOOKING_PATH}`;
-    console.log("forwardFormSubmissionToServer:", { url, payload });
 
     if (url && payload) {
       const response = await fetch(url, {
