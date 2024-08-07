@@ -19,7 +19,8 @@ class RahuiWidget {
   form = null as unknown as HTMLElement | null;
   formId = "rahui-booking-form";
   datePickerId = "date-picker";
-  timePickerId = "time-picker";
+  timePickerHoursId = "time-picker-hours";
+  timePickerMinutesId = "time-picker-minutes";
   datePickerHiddenInputId = "hidden-date-input";
   confirmationContainerElementId = "confirmation-message-container";
   errorMessageElementId = "error-message";
@@ -157,7 +158,6 @@ class RahuiWidget {
 
     if (response.status === 200) {
       const settings = (await response.json()) as WidgetSettings;
-      console.log({ settings });
       this.applySettings(settings);
     } else {
       console.error({ body: await response.json() });
@@ -207,10 +207,24 @@ class RahuiWidget {
 
     if (response.status === 200) {
       const openingHours = (await response.json()) as OpeningHours;
-      console.log({ openingHours });
-      // this.applyOpeningHours(openingHours);
+      this.applyOpeningHours(openingHours);
     } else {
       console.error({ body: await response.json() });
+    }
+  }
+
+  applyOpeningHours(openingHours: OpeningHours) {
+    console.log({ openingHours });
+    const hoursInput = document.getElementById(this.timePickerHoursId);
+    if (hoursInput && openingHours) {
+      const { open_at, close_at } = openingHours?.opening_hours;
+      const options = hoursInput.querySelectorAll("option");
+      console.log({ hoursInput, open_at, close_at, options });
+      options.forEach((option) => {
+        if (option.value < open_at || option.value > close_at) {
+          option.disabled = true;
+        }
+      });
     }
   }
 
@@ -295,7 +309,8 @@ class RahuiWidget {
       formId: this.formId,
       datePickerHiddenInputId: this.datePickerHiddenInputId,
       datePickerId: this.datePickerId,
-      timePickerId: this.timePickerId,
+      timePickerHoursId: this.timePickerHoursId,
+      timePickerMinutesId: this.timePickerMinutesId,
     });
   }
 

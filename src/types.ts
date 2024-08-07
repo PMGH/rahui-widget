@@ -38,15 +38,17 @@ export type WidgetContentProps = {
   formId: string;
   datePickerHiddenInputId: string;
   datePickerId: string;
-  timePickerId: string;
+  timePickerHoursId: string;
+  timePickerMinutesId: string;
 };
 
 export type WidgetSettings = {
   max_covers_per_booking: number;
 };
-export type OpeningHour = {
-  close_at: string;
-  day: string;
-  open_at: string;
+export type OpeningHours = {
+  opening_hours: {
+    close_at: string;
+    day: string;
+    open_at: string;
+  };
 };
-export type OpeningHours = OpeningHour[];
