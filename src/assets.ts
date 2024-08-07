@@ -130,6 +130,19 @@ export const styles = `
     height: 32px;
     font-weight: bold;
   }
+  .time-select-container {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    margin: 2rem 0;
+    gap: 1rem;
+  }
+  .time-select {
+    padding: 0.75rem 1rem;
+  }
+  .time-select:hover {
+    cursor: pointer;
+  }
   .wrapper {
     height: 30%;
     display: flex;
@@ -164,6 +177,7 @@ export const styles = `
     stroke-dashoffset: 48;
     animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
   }
+
   @keyframes stroke {
     100% {
       stroke-dashoffset: 0;
@@ -183,6 +197,7 @@ export const styles = `
       box-shadow: inset 0px 0px 0px 30px green;
     }
   }
+
   @media screen and (min-width: 768px) {
     .form__field__group {
       flex-flow: row nowrap;
@@ -195,6 +210,10 @@ export const styles = `
     }
     .number-of-covers,
     .last-name {
+      margin-left: 1rem;
+    }
+    .time-select-container {
+      justify-content: flex-start;
       margin-left: 1rem;
     }
   }

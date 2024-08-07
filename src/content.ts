@@ -30,8 +30,8 @@ export const getWidgetContent = ({
           <input type="hidden" id="${datePickerHiddenInputId}" name="booking[date]">
         </div>
         <wc-datepicker id="${datePickerId}" first-day-of-week="1" id="${datePickerId}"></wc-datepicker>
-        <div>
-          <select  id="${timePickerHoursId}" name="booking[time][hours]">
+        <div class="time-select-container">
+          <select id="${timePickerHoursId}" name="booking[time][hours]" required class="time-select">
             <option value="0">00</option>
             <option value="1">01</option>
             <option value="2">02</option>
@@ -57,7 +57,7 @@ export const getWidgetContent = ({
             <option value="22">22</option>
             <option value="23">23</option>
           </select>
-          <select id="${timePickerMinutesId}" name="booking[time][minutes]" required>
+          <select id="${timePickerMinutesId}" name="booking[time][minutes]" required class="time-select">
             <option value="00">00</option>
             <option value="15">15</option>
             <option value="30">30</option>
