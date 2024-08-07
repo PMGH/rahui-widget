@@ -23,6 +23,8 @@ class RahuiWidget {
   timePickerMinutesId = "time-picker-minutes";
   datePickerHiddenInputId = "hidden-date-input";
   confirmationContainerElementId = "confirmation-message-container";
+  confirmationBookingDatetimeElementId = "confirmation-booking-datetime";
+  confirmationBookingCoversElementId = "confirmation-booking-number-of-covers";
   errorMessageElementId = "error-message";
 
   // Widget content
@@ -66,7 +68,7 @@ class RahuiWidget {
       this.form.addEventListener("submit", this.formSubmit.bind(this));
 
     /**
-     * Setup datetime picker using wc-datepicker
+     * Setup date picker using wc-datepicker
      * https://sqrrl.github.io/wc-datepicker/
      */
     defineCustomElements();
@@ -91,6 +93,9 @@ class RahuiWidget {
       });
     }
 
+    /**
+     * Get settings and opening hours from the server
+     */
     this.getWidgetSettings();
     this.getOpeningHours();
   }
@@ -102,8 +107,8 @@ class RahuiWidget {
 
     // Booking
     const date = new Date(parsedData["booking[date]"] as string);
-    const time = parsedData["booking[time]"] as string;
-    const [hours, minutes] = time.split(":");
+    const hours = parsedData["booking[time][hours]"] as string;
+    const minutes = parsedData["booking[time][minutes]"] as string;
     const datetime = new Date(
       date.setHours(parseInt(hours), parseInt(minutes), 0)
     );
@@ -254,6 +259,8 @@ class RahuiWidget {
         : VITE_RAHUI_BOOKING_LOCAL_SERVER_URL;
     const url = `${base_url}/${VITE_RAHUI_BOOKING_WIDGET_CREATE_BOOKING_PATH}`;
 
+    console.log({ payload });
+
     if (url && payload) {
       const response = await fetch(url, {
         headers: {
@@ -282,11 +289,36 @@ class RahuiWidget {
     form.style.visibility = "hidden";
   }
 
-  showConfirmationMessage(_booking: Booking) {
+  showConfirmationMessage(booking: Booking) {
     const confirmationElement = document.getElementById(
       this.confirmationContainerElementId
     );
-    if (!confirmationElement) return;
+    const confirmationBookingDatetimeElement = document.getElementById(
+      this.confirmationBookingDatetimeElementId
+    );
+    const confirmationBookingCoversElement = document.getElementById(
+      this.confirmationBookingCoversElementId
+    );
+    if (!confirmationElement || !booking) return;
+
+    if (confirmationBookingDatetimeElement) {
+      const date = new Date(booking.datetime);
+      const locale = Intl.DateTimeFormat().resolvedOptions().locale;
+      const datetime = new Intl.DateTimeFormat(locale, {
+        dateStyle: "full",
+        timeStyle: "short",
+      }).format(date);
+      confirmationBookingDatetimeElement.textContent = datetime;
+    }
+
+    if (confirmationBookingCoversElement) {
+      const numberOfCovers = booking.number_of_covers.toString();
+      const numberOfCoversMessage =
+        booking.number_of_covers === 1
+          ? `${numberOfCovers} Person | `
+          : `${numberOfCovers} People | `;
+      confirmationBookingCoversElement.textContent = numberOfCoversMessage;
+    }
 
     confirmationElement.style.display = "flex";
     confirmationElement.scrollIntoView({

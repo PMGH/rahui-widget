@@ -19,6 +19,10 @@ export const getWidgetContent = ({
       <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"> <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/> <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>
     </div>
     <h3 id="confirmation-message">Booking confirmed!</h3>
+    <div id="confirmation-booking-container">
+      <span id="confirmation-booking-number-of-covers"></span>
+      <span id="confirmation-booking-datetime"></span>
+    </div>
   </div>
 
   <form id="${formId}">
@@ -31,7 +35,7 @@ export const getWidgetContent = ({
         </div>
         <wc-datepicker id="${datePickerId}" first-day-of-week="1" id="${datePickerId}"></wc-datepicker>
         <div class="time-select-container">
-          <select id="${timePickerHoursId}" name="booking[time][hours]" required class="time-select">
+          <select id="${timePickerHoursId}" name="booking[time][hours]" required class="time-select" data-time="hours">
             <option value="0">00</option>
             <option value="1">01</option>
             <option value="2">02</option>
@@ -57,7 +61,7 @@ export const getWidgetContent = ({
             <option value="22">22</option>
             <option value="23">23</option>
           </select>
-          <select id="${timePickerMinutesId}" name="booking[time][minutes]" required class="time-select">
+          <select id="${timePickerMinutesId}" name="booking[time][minutes]" required class="time-select" data-time="minutes">
             <option value="00">00</option>
             <option value="15">15</option>
             <option value="30">30</option>

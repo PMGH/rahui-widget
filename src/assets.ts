@@ -49,6 +49,17 @@ export const styles = `
   #confirmation-message {
     font-size: 1.5rem;
   }
+  #confirmation-booking-container {
+    margin-top: 1rem;
+    margin-right: 1rem;
+  }
+  #confirmation-booking-container {
+    display: flex;
+    align-items: center;
+  }
+  #confirmation-booking-number-of-covers {
+    margin-right: 0.5rem;
+  }
   #error-message {
     color: red;
     border: 2px solid red;
