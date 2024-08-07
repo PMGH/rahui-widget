@@ -113,14 +113,14 @@ class RahuiWidget {
       date.setHours(parseInt(hours), parseInt(minutes), 0)
     );
     const datetimeUTC = datetime.toUTCString();
-    const numberOfCovers = parsedData["booking[number_of_covers]"].toString();
-    const notes = parsedData["booking[notes]"].toString();
+    const numberOfCovers = String(parsedData["booking[number_of_covers]"]);
+    const notes = String(parsedData["booking[notes]"]);
 
     // Customer
-    const firstName = parsedData["customer[first_name]"].toString();
-    const lastName = parsedData["customer[last_name]"].toString();
-    const email = parsedData["customer[email]"].toString();
-    const phone = parsedData["customer[phone]"].toString();
+    const firstName = String(parsedData["customer[first_name]"]);
+    const lastName = String(parsedData["customer[last_name]"]);
+    const email = String(parsedData["customer[email]"]);
+    const phone = String(parsedData["customer[phone]"]);
 
     const payload: Payload = {
       "widget-submission": true,
@@ -185,7 +185,7 @@ class RahuiWidget {
     if (maxCoversPerBooking && numberOfCoversLabel && numberOfCoversInput) {
       numberOfCoversLabel.textContent =
         numberOfCoversLabel.textContent + ` (max: ${maxCoversPerBooking})`;
-      numberOfCoversInput.max = maxCoversPerBooking.toString();
+      numberOfCoversInput.max = String(maxCoversPerBooking);
     }
   }
 
@@ -313,7 +313,7 @@ class RahuiWidget {
     }
 
     if (confirmationBookingCoversElement) {
-      const numberOfCovers = booking.number_of_covers.toString();
+      const numberOfCovers = String(booking.number_of_covers);
       const numberOfCoversMessage =
         booking.number_of_covers === 1
           ? `${numberOfCovers} Person | `
