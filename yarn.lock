@@ -197,6 +197,11 @@
   resolved "https://registry.yarnpkg.com/@rollup/rollup-win32-x64-msvc/-/rollup-win32-x64-msvc-4.20.0.tgz#601fffee719a1e8447f908aca97864eec23b2784"
   integrity sha512-aJ1EJSuTdGnM6qbVC4B5DSmozPTqIag9fSzXRNNo+humQLG89XpPgdt16Ia56ORD7s+H8Pmyx44uczDQ0yDzpg==
 
+"@stencil/core@^2.13.0":
+  version "2.22.3"
+  resolved "https://registry.yarnpkg.com/@stencil/core/-/core-2.22.3.tgz#83987e20bba855c450f6d6780e3a20192603f13f"
+  integrity sha512-kmVA0M/HojwsfkeHsifvHVIYe4l5tin7J5+DLgtl8h6WWfiMClND5K3ifCXXI2ETDNKiEk21p6jql3Fx9o2rng==
+
 "@types/estree@1.0.5":
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-1.0.5.tgz#a6ce3e556e00fd9895dd872dd172ad0d4bd687f4"
@@ -230,11 +235,6 @@ esbuild@^0.21.3:
     "@esbuild/win32-arm64" "0.21.5"
     "@esbuild/win32-ia32" "0.21.5"
     "@esbuild/win32-x64" "0.21.5"
-
-flatpickr@^4.6.13:
-  version "4.6.13"
-  resolved "https://registry.yarnpkg.com/flatpickr/-/flatpickr-4.6.13.tgz#8a029548187fd6e0d670908471e43abe9ad18d94"
-  integrity sha512-97PMG/aywoYpB4IvbvUJi0RQi8vearvU0oov1WW3k0WZPBMrTQVqekSX5CjSG/M4Q3i6A/0FKXC7RyAoAUUSPw==
 
 fsevents@~2.3.2, fsevents@~2.3.3:
   version "2.3.3"
@@ -305,3 +305,10 @@ vite@^5.3.4:
     rollup "^4.13.0"
   optionalDependencies:
     fsevents "~2.3.3"
+
+wc-datepicker@^0.5.3:
+  version "0.5.3"
+  resolved "https://registry.yarnpkg.com/wc-datepicker/-/wc-datepicker-0.5.3.tgz#92dc5faffb9e98c6421472a80304f3775d68747f"
+  integrity sha512-SiQaTV6yZwcVcF3oODA1SEoOa/EnCSO5PnwQi+mDCAkrqhdGMdimKrqzRHbE0zZCrNhFAWnV+ZW6vbTDQe0VpQ==
+  dependencies:
+    "@stencil/core" "^2.13.0"

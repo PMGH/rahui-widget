@@ -1,18 +1,41 @@
-import flatpickr from "flatpickr";
 import { styles } from "./assets.js";
-import { type Payload } from "./types";
+import { getWidgetContent } from "./content.js";
+import {
+  Booking,
+  Datepicker,
+  OpeningHours,
+  WidgetConfig,
+  WidgetSettings,
+  type Payload,
+} from "./types";
+import { defineCustomElements } from "wc-datepicker/dist/loader";
+
+// Importing a theme is optional.
+import "wc-datepicker/dist/themes/light.css";
 
 class RahuiWidget {
-  constructor() {
+  apiKey = "";
+  widgetContainer = null as unknown as HTMLDivElement;
+  form = null as unknown as HTMLElement | null;
+  formId = "rahui-booking-form";
+  datePickerId = "date-picker";
+  timePickerHoursId = "time-picker-hours";
+  timePickerMinutesId = "time-picker-minutes";
+  datePickerHiddenInputId = "hidden-date-input";
+  confirmationContainerElementId = "confirmation-message-container";
+  confirmationBookingDatetimeElementId = "confirmation-booking-datetime";
+  confirmationBookingCoversElementId = "confirmation-booking-number-of-covers";
+  errorMessageElementId = "error-message";
+
+  // Widget content
+  heading = "Book a table";
+
+  constructor({ apiKey }: WidgetConfig) {
+    this.apiKey = apiKey;
     this.initialize();
     this.injectStyles();
     this.setupEventListenersForRequiredFields();
   }
-
-  widgetContainer = null as unknown as HTMLDivElement;
-  formId = "rahui-booking-form";
-  form = null as unknown as HTMLElement | null;
-  datetimePickerId = "datetime-picker";
 
   async initialize() {
     /**
@@ -45,133 +68,294 @@ class RahuiWidget {
       this.form.addEventListener("submit", this.formSubmit.bind(this));
 
     /**
-     * Setup datetime picker using flatpickr
+     * Setup date picker using wc-datepicker
+     * https://sqrrl.github.io/wc-datepicker/
      */
-    flatpickr(`#${this.datetimePickerId}`, {
-      enableTime: true,
-      time_24hr: true,
-      minDate: "today",
-      dateFormat: "Y-m-d H:i",
-    });
+    defineCustomElements();
+    const datepicker = document.getElementById(this.datePickerId) as Datepicker;
+    if (datepicker) {
+      // Disable dates before today
+      datepicker.disableDate = function (date: Date) {
+        const now = new Date();
+        const comparableDatetimeNow = new Date(now.setHours(0, 0, 0));
+        const comparableDatetime = new Date(date.setHours(15, 0, 0));
+        return comparableDatetime.getTime() < comparableDatetimeNow.getTime();
+      };
+      // Set selected date as hidden input value
+      datepicker.addEventListener("selectDate", (event: any) => {
+        const datePickerHiddenInput = document.getElementById(
+          this.datePickerHiddenInputId
+        ) as HTMLInputElement;
+        if (datePickerHiddenInput) {
+          datePickerHiddenInput.value = event.detail;
+        }
+        this.getOpeningHours(event.detail);
+      });
+    }
+
+    /**
+     * Get settings and opening hours from the server
+     */
+    this.getWidgetSettings();
+    this.getOpeningHours();
   }
 
   async formSubmit(e: any) {
     e.preventDefault();
     const data = new FormData(e.target);
-    const parsedData = Object.fromEntries(data.entries()) as Payload;
-    const datetime = new Date(parsedData.datetime as string);
+    const parsedData = Object.fromEntries(data.entries());
+
+    // Booking
+    const date = new Date(parsedData["booking[date]"] as string);
+    const hours = parsedData["booking[time][hours]"] as string;
+    const minutes = parsedData["booking[time][minutes]"] as string;
+    const datetime = new Date(
+      date.setHours(parseInt(hours), parseInt(minutes), 0)
+    );
     const datetimeUTC = datetime.toUTCString();
-    console.log({ parsedData });
+    const numberOfCovers = String(parsedData["booking[number_of_covers]"]);
+    const notes = String(parsedData["booking[notes]"]);
+
+    // Customer
+    const firstName = String(parsedData["customer[first_name]"]);
+    const lastName = String(parsedData["customer[last_name]"]);
+    const email = String(parsedData["customer[email]"]);
+    const phone = String(parsedData["customer[phone]"]);
 
     const payload: Payload = {
-      ...parsedData,
-      datetime: datetimeUTC,
+      "widget-submission": true,
+      booking: {
+        datetime: datetimeUTC,
+        number_of_covers: numberOfCovers,
+        notes,
+      },
+      customer: {
+        first_name: firstName,
+        last_name: lastName,
+        email,
+        phone,
+      },
     };
+
     await this.forwardFormSubmissionToServer(payload);
   }
 
-  async forwardFormSubmissionToServer(payload: Payload) {
-    const base_url = import.meta.env.VITE_RAHUI_BOOKING_SERVER_URL;
-    const url = `${base_url}/widget-form-submission`;
-    console.log("forwardFormSubmissionToServer:", { base_url, payload });
-    if (url && payload) {
-      const response = await fetch(url, {
-        method: "POST",
-        body: JSON.stringify(payload),
-      });
-      console.log({ response });
+  async getWidgetSettings() {
+    const {
+      VITE_IS_PRODUCTION,
+      VITE_RAHUI_BOOKING_LOCAL_SERVER_URL,
+      VITE_RAHUI_BOOKING_PRODUCTION_SERVER_URL,
+      VITE_RAHUI_BOOKING_WIDGET_SETTINGS_PATH,
+    } = import.meta.env;
+
+    const base_url =
+      VITE_IS_PRODUCTION === "true"
+        ? VITE_RAHUI_BOOKING_PRODUCTION_SERVER_URL
+        : VITE_RAHUI_BOOKING_LOCAL_SERVER_URL;
+    const url = `${base_url}/${VITE_RAHUI_BOOKING_WIDGET_SETTINGS_PATH}`;
+
+    const response = await fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this.apiKey}`,
+      },
+      method: "GET",
+    });
+
+    if (response.status === 200) {
+      const settings = (await response.json()) as WidgetSettings;
+      this.applySettings(settings);
+    } else {
+      console.error({ body: await response.json() });
     }
   }
 
+  applySettings(settings: WidgetSettings) {
+    this.setMaxCoversPerBooking(settings);
+  }
+
+  setMaxCoversPerBooking(settings: WidgetSettings) {
+    const maxCoversPerBooking = settings.max_covers_per_booking;
+    const numberOfCoversLabel = document.getElementById(
+      "number_of_covers_label"
+    );
+    const numberOfCoversInput = document.getElementById(
+      "number_of_covers"
+    ) as HTMLInputElement;
+    if (maxCoversPerBooking && numberOfCoversLabel && numberOfCoversInput) {
+      numberOfCoversLabel.textContent =
+        numberOfCoversLabel.textContent + ` (max: ${maxCoversPerBooking})`;
+      numberOfCoversInput.max = String(maxCoversPerBooking);
+    }
+  }
+
+  async getOpeningHours(date = undefined) {
+    const {
+      VITE_IS_PRODUCTION,
+      VITE_RAHUI_BOOKING_LOCAL_SERVER_URL,
+      VITE_RAHUI_BOOKING_PRODUCTION_SERVER_URL,
+      VITE_RAHUI_BOOKING_WIDGET_OPENING_HOURS_PATH,
+    } = import.meta.env;
+
+    const base_url =
+      VITE_IS_PRODUCTION === "true"
+        ? VITE_RAHUI_BOOKING_PRODUCTION_SERVER_URL
+        : VITE_RAHUI_BOOKING_LOCAL_SERVER_URL;
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const query =
+      date && timezone ? `?date=${date}&timezone=${timezone}` : undefined;
+    const url = query
+      ? `${base_url}/${VITE_RAHUI_BOOKING_WIDGET_OPENING_HOURS_PATH}${query}`
+      : `${base_url}/${VITE_RAHUI_BOOKING_WIDGET_OPENING_HOURS_PATH}`;
+
+    const response = await fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this.apiKey}`,
+      },
+      method: "GET",
+    });
+
+    if (response.status === 200) {
+      const openingHours = (await response.json()) as OpeningHours;
+      this.applyOpeningHours(openingHours);
+    } else {
+      console.error({ body: await response.json() });
+    }
+  }
+
+  applyOpeningHours(openingHours: OpeningHours) {
+    const hoursSelect = document.getElementById(this.timePickerHoursId);
+    if (hoursSelect && openingHours) {
+      const { open_at, close_at } = openingHours?.opening_hours;
+      const options = Array.from(Array(23).keys()).map((index) => {
+        const option = document.createElement("option");
+        option.value = String(index);
+        option.innerHTML =
+          index < 10 ? String(index).padStart(2, "0") : String(index);
+        return option;
+      });
+      const validOptions: HTMLOptionElement[] = [];
+      options.forEach((option) => {
+        if (option.value >= open_at && option.value <= close_at) {
+          validOptions.push(option);
+        }
+      });
+      hoursSelect.innerHTML = "";
+      hoursSelect.append(...validOptions);
+    }
+  }
+
+  async forwardFormSubmissionToServer(payload: Payload) {
+    const {
+      VITE_IS_PRODUCTION,
+      VITE_RAHUI_BOOKING_LOCAL_SERVER_URL,
+      VITE_RAHUI_BOOKING_PRODUCTION_SERVER_URL,
+      VITE_RAHUI_BOOKING_WIDGET_CREATE_BOOKING_PATH,
+    } = import.meta.env;
+
+    const base_url =
+      VITE_IS_PRODUCTION === "true"
+        ? VITE_RAHUI_BOOKING_PRODUCTION_SERVER_URL
+        : VITE_RAHUI_BOOKING_LOCAL_SERVER_URL;
+    const url = `${base_url}/${VITE_RAHUI_BOOKING_WIDGET_CREATE_BOOKING_PATH}`;
+
+    console.log({ payload });
+
+    if (url && payload) {
+      const response = await fetch(url, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.apiKey}`,
+        },
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+      this.hideErrorMessage();
+      if (response.status === 201) {
+        const booking = (await response.json()) as Booking;
+        this.hideForm();
+        this.showConfirmationMessage(booking);
+      } else {
+        console.error({ body: await response.json() });
+        this.showErrorMessage();
+      }
+    }
+  }
+
+  hideForm() {
+    const form = document.getElementById(this.formId);
+    if (!form) return;
+
+    form.style.visibility = "hidden";
+  }
+
+  showConfirmationMessage(booking: Booking) {
+    const confirmationElement = document.getElementById(
+      this.confirmationContainerElementId
+    );
+    const confirmationBookingDatetimeElement = document.getElementById(
+      this.confirmationBookingDatetimeElementId
+    );
+    const confirmationBookingCoversElement = document.getElementById(
+      this.confirmationBookingCoversElementId
+    );
+    if (!confirmationElement || !booking) return;
+
+    if (confirmationBookingDatetimeElement) {
+      const date = new Date(booking.datetime);
+      const locale = Intl.DateTimeFormat().resolvedOptions().locale;
+      const datetime = new Intl.DateTimeFormat(locale, {
+        dateStyle: "full",
+        timeStyle: "short",
+      }).format(date);
+      confirmationBookingDatetimeElement.textContent = datetime;
+    }
+
+    if (confirmationBookingCoversElement) {
+      const numberOfCovers = String(booking.number_of_covers);
+      const numberOfCoversMessage =
+        booking.number_of_covers === 1
+          ? `${numberOfCovers} Person | `
+          : `${numberOfCovers} People | `;
+      confirmationBookingCoversElement.textContent = numberOfCoversMessage;
+    }
+
+    confirmationElement.style.display = "flex";
+    confirmationElement.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+      inline: "center",
+    });
+  }
+
+  hideErrorMessage() {
+    const errorMessageElement = document.getElementById(
+      this.errorMessageElementId
+    );
+    if (!errorMessageElement) return;
+
+    errorMessageElement.style.display = "none";
+  }
+
+  showErrorMessage() {
+    const errorMessageElement = document.getElementById(
+      this.errorMessageElementId
+    );
+    if (!errorMessageElement) return;
+
+    errorMessageElement.style.display = "block";
+  }
+
   createWidgetContent() {
-    this.widgetContainer.innerHTML = `
-      <header class="widget__header">
-        <h3>Book a table</h3>
-      </header>
-      <form id="${this.formId}">
-        <input type="hidden" id="widget-submission" name="widget-submission" value="true">
-        <div class="form__field__group">
-          <div class="form__field">
-            <div class="form__field__required">
-              <label for="datetime">Booking (date and time)</label><span class="required-field-symbol">*</span>
-            </div>
-            <input id="${this.datetimePickerId}" name="datetime" placeholder="Select date and time" required>
-          </div>
-          <div class="form__field form__field__required number-of-covers">
-            <div class="form__field__required">
-              <label for="number_of_covers">Guests</label><span class="required-field-symbol">*</span>
-            </div>
-            <input
-              type="number"
-              id="number_of_covers"
-              name="number_of_covers"
-              placeholder="1"
-              required
-            />
-          </div>
-        </div>
-        <section class="customer-details">
-          <div class="form__field__group">
-            <div class="form__field">
-              <div class="form__field__required">
-                <label for="first_name">First name</label><span class="required-field-symbol" id="customer_first_name_required_symbol">*</span>
-              </div>
-              <input
-                type="text"
-                id="customer_first_name"
-                name="first_name"
-                placeholder="Enter your first name"
-                required
-              />
-            </div>
-            <div class="form__field last-name">
-              <div class="form__field__required">
-                <label for="last_name">Last name</label><span class="required-field-symbol" id="customer_last_name_required_symbol">*</span>
-              </div>
-              <input
-                type="text"
-                id="customer_last_name"
-                name="last_name"
-                placeholder="Enter your last name"
-                required
-              />
-            </div>
-          </div>
-          <div class="form__field">
-            <div class="form__field__required">
-              <label for="email">Email</label><span class="required-field-symbol">*</span>
-            </div>
-            <p class="info muted">We send the booking confirmation to this email address</p>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              placeholder="Enter your email address"
-            />
-          </div>
-          <div class="form__field">
-            <label for="phone">Phone number</label>
-            <p class="info muted">We may use this to contact you about your booking</p>
-            <input
-              type="phone"
-              id="phone"
-              name="phone"
-              placeholder="Enter your phone number"
-            />
-          </div>
-        </section>
-        <div class="form__field">
-          <label for="notes">Notes</label>
-          <textarea
-            id="notes"
-            name="notes"
-            placeholder="Enter any additional notes"
-            rows="6"
-          ></textarea>
-        </div>
-        <button type="submit">Create Booking</button>
-      </form>
-    `;
+    this.widgetContainer.innerHTML = getWidgetContent({
+      heading: this.heading,
+      formId: this.formId,
+      datePickerHiddenInputId: this.datePickerHiddenInputId,
+      datePickerId: this.datePickerId,
+      timePickerHoursId: this.timePickerHoursId,
+      timePickerMinutesId: this.timePickerMinutesId,
+    });
   }
 
   injectStyles() {
@@ -246,8 +430,10 @@ class RahuiWidget {
   }
 }
 
-function initializeWidget() {
-  return new RahuiWidget();
+function initializeWidget(config: WidgetConfig) {
+  return new RahuiWidget(config);
 }
 
-initializeWidget();
+initializeWidget({
+  apiKey: "b7511851-0a8b-4ee4-b14c-09e33d453cfd",
+});
