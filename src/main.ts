@@ -31,11 +31,13 @@ class RahuiWidget {
 
   // Widget content
   heading = "";
+  buttonText = "";
 
   constructor({ apiKey, rootElementId, content }: WidgetConfig) {
     this.apiKey = apiKey;
     this.rootElementId = rootElementId || "";
     this.heading = content?.heading || "Book a table";
+    this.buttonText = content?.buttonText || "Create booking";
 
     this.initialize();
     this.injectStyles();
@@ -351,6 +353,7 @@ class RahuiWidget {
   createWidgetContent() {
     this.widgetContainer.innerHTML = getWidgetContent({
       heading: this.heading,
+      buttonText: this.buttonText,
       formId: this.formId,
       datePickerHiddenInputId: this.datePickerHiddenInputId,
       datePickerId: this.datePickerId,
@@ -447,5 +450,6 @@ initializeWidget({
   rootElementId: testRootElementId,
   content: {
     heading: "Reserve a table",
+    buttonText: "Create Reservation",
   },
 });

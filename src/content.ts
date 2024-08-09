@@ -2,6 +2,7 @@ import { WidgetContentProps } from "./types";
 
 export const getWidgetContent = ({
   heading,
+  buttonText,
   formId,
   datePickerHiddenInputId,
   datePickerId,
@@ -145,6 +146,6 @@ export const getWidgetContent = ({
       ></textarea>
     </div>
 
-    <button type="submit">Create Booking</button>
+    <button type="submit">${buttonText}</button>
   </form>
 `;
