@@ -17,9 +17,14 @@ export type Datepicker = HTMLElement & {
   disableDate: (date: Date) => boolean;
 };
 
+type WidgetConfigContent = {
+  heading?: string;
+  buttonText?: string;
+};
 export type WidgetConfig = {
   apiKey: string;
   rootElementId?: string;
+  content?: WidgetConfigContent;
 };
 
 export type Booking = {
@@ -34,8 +39,7 @@ export type Booking = {
   user_id: null;
 };
 
-export type WidgetContentProps = {
-  heading: string;
+export type WidgetContentProps = WidgetConfigContent & {
   formId: string;
   datePickerHiddenInputId: string;
   datePickerId: string;
@@ -53,3 +57,10 @@ export type OpeningHours = {
     open_at: string;
   };
 };
+
+declare global {
+  interface Window {
+    RahuiWidget: any;
+  }
+}
+window.RahuiWidget = window.RahuiWidget || {};

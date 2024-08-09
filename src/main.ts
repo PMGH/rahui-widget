@@ -15,8 +15,10 @@ import "wc-datepicker/dist/themes/light.css";
 class RahuiWidget {
   apiKey = "";
   rootElementId = "";
+
   widgetContainer = null as unknown as HTMLDivElement;
   form = null as unknown as HTMLElement | null;
+
   formId = "rahui-booking-form";
   datePickerId = "date-picker";
   timePickerHoursId = "time-picker-hours";
@@ -28,11 +30,14 @@ class RahuiWidget {
   errorMessageElementId = "error-message";
 
   // Widget content
-  heading = "Book a table";
+  heading = "";
+  buttonText = "";
 
-  constructor({ apiKey, rootElementId }: WidgetConfig) {
+  constructor({ apiKey, rootElementId, content }: WidgetConfig) {
     this.apiKey = apiKey;
     this.rootElementId = rootElementId || "";
+    this.heading = content?.heading || "Book a table";
+    this.buttonText = content?.buttonText || "Create booking";
 
     this.initialize();
     this.injectStyles();
@@ -110,6 +115,14 @@ class RahuiWidget {
     this.getOpeningHours();
   }
 
+  apiBaseUrl() {
+    const { VITE_IS_DEVELOPMENT, VITE_RAHUI_BOOKING_LOCAL_SERVER_URL } =
+      import.meta.env;
+    return VITE_IS_DEVELOPMENT === "true"
+      ? VITE_RAHUI_BOOKING_LOCAL_SERVER_URL
+      : "https://rahui-booking.com";
+  }
+
   async formSubmit(e: any) {
     e.preventDefault();
     const data = new FormData(e.target);
@@ -151,18 +164,7 @@ class RahuiWidget {
   }
 
   async getWidgetSettings() {
-    const {
-      VITE_IS_PRODUCTION,
-      VITE_RAHUI_BOOKING_LOCAL_SERVER_URL,
-      VITE_RAHUI_BOOKING_PRODUCTION_SERVER_URL,
-      VITE_RAHUI_BOOKING_WIDGET_SETTINGS_PATH,
-    } = import.meta.env;
-
-    const base_url =
-      VITE_IS_PRODUCTION === "true"
-        ? VITE_RAHUI_BOOKING_PRODUCTION_SERVER_URL
-        : VITE_RAHUI_BOOKING_LOCAL_SERVER_URL;
-    const url = `${base_url}/${VITE_RAHUI_BOOKING_WIDGET_SETTINGS_PATH}`;
+    const url = `${this.apiBaseUrl()}/api/widgets/settings`;
 
     const response = await fetch(url, {
       headers: {
@@ -200,23 +202,12 @@ class RahuiWidget {
   }
 
   async getOpeningHours(date = undefined) {
-    const {
-      VITE_IS_PRODUCTION,
-      VITE_RAHUI_BOOKING_LOCAL_SERVER_URL,
-      VITE_RAHUI_BOOKING_PRODUCTION_SERVER_URL,
-      VITE_RAHUI_BOOKING_WIDGET_OPENING_HOURS_PATH,
-    } = import.meta.env;
-
-    const base_url =
-      VITE_IS_PRODUCTION === "true"
-        ? VITE_RAHUI_BOOKING_PRODUCTION_SERVER_URL
-        : VITE_RAHUI_BOOKING_LOCAL_SERVER_URL;
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const query =
       date && timezone ? `?date=${date}&timezone=${timezone}` : undefined;
     const url = query
-      ? `${base_url}/${VITE_RAHUI_BOOKING_WIDGET_OPENING_HOURS_PATH}${query}`
-      : `${base_url}/${VITE_RAHUI_BOOKING_WIDGET_OPENING_HOURS_PATH}`;
+      ? `${this.apiBaseUrl()}/api/widgets/opening_hours${query}`
+      : `${this.apiBaseUrl()}/api/widgets/opening_hours`;
 
     const response = await fetch(url, {
       headers: {
@@ -257,20 +248,7 @@ class RahuiWidget {
   }
 
   async forwardFormSubmissionToServer(payload: Payload) {
-    const {
-      VITE_IS_PRODUCTION,
-      VITE_RAHUI_BOOKING_LOCAL_SERVER_URL,
-      VITE_RAHUI_BOOKING_PRODUCTION_SERVER_URL,
-      VITE_RAHUI_BOOKING_WIDGET_CREATE_BOOKING_PATH,
-    } = import.meta.env;
-
-    const base_url =
-      VITE_IS_PRODUCTION === "true"
-        ? VITE_RAHUI_BOOKING_PRODUCTION_SERVER_URL
-        : VITE_RAHUI_BOOKING_LOCAL_SERVER_URL;
-    const url = `${base_url}/${VITE_RAHUI_BOOKING_WIDGET_CREATE_BOOKING_PATH}`;
-
-    console.log({ payload });
+    const url = `${this.apiBaseUrl()}/api/widgets/create_booking`;
 
     if (url && payload) {
       const response = await fetch(url, {
@@ -360,6 +338,7 @@ class RahuiWidget {
   createWidgetContent() {
     this.widgetContainer.innerHTML = getWidgetContent({
       heading: this.heading,
+      buttonText: this.buttonText,
       formId: this.formId,
       datePickerHiddenInputId: this.datePickerHiddenInputId,
       datePickerId: this.datePickerId,
@@ -440,18 +419,22 @@ class RahuiWidget {
   }
 }
 
-const testRootElementId = "test-root-element";
-if (import.meta.env.VITE_TEST_ROOT_ELEMENT === "true") {
-  const testRootElement = document.createElement("div");
-  testRootElement.id = testRootElementId;
-  document.body.appendChild(testRootElement);
+if (import.meta.env.VITE_IS_DEVELOPMENT === "true") {
+  const testRootElementId = "test-root-element";
+  if (import.meta.env.VITE_TEST_ROOT_ELEMENT === "true") {
+    const testRootElement = document.createElement("div");
+    testRootElement.id = testRootElementId;
+    document.body.appendChild(testRootElement);
+  }
+
+  new RahuiWidget({
+    apiKey: "b7511851-0a8b-4ee4-b14c-09e33d453cfd",
+    rootElementId: testRootElementId,
+    content: {
+      heading: "Reserve a table",
+      buttonText: "Create Reservation",
+    },
+  });
 }
 
-function initializeWidget(config: WidgetConfig) {
-  return new RahuiWidget(config);
-}
-
-initializeWidget({
-  apiKey: "b7511851-0a8b-4ee4-b14c-09e33d453cfd",
-  rootElementId: testRootElementId,
-});
+window.RahuiWidget = RahuiWidget;
