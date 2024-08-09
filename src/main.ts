@@ -45,7 +45,10 @@ class RahuiWidget {
      * Create and append a div element to the document body
      */
     const container = document.createElement("div");
-    if (this.rootElementId) {
+    if (
+      import.meta.env.VITE_TEST_ROOT_ELEMENT === "true" &&
+      Boolean(this.rootElementId.length)
+    ) {
       const rootElement = document.getElementById(this.rootElementId);
       rootElement && rootElement.appendChild(container);
     } else {
