@@ -10,11 +10,11 @@ import {
 } from "./types";
 import { defineCustomElements } from "wc-datepicker/dist/loader";
 
-// Importing a theme is optional.
 import "wc-datepicker/dist/themes/light.css";
 
 class RahuiWidget {
   apiKey = "";
+  rootElementId = "";
   widgetContainer = null as unknown as HTMLDivElement;
   form = null as unknown as HTMLElement | null;
   formId = "rahui-booking-form";
@@ -30,8 +30,10 @@ class RahuiWidget {
   // Widget content
   heading = "Book a table";
 
-  constructor({ apiKey }: WidgetConfig) {
+  constructor({ apiKey, rootElementId }: WidgetConfig) {
     this.apiKey = apiKey;
+    this.rootElementId = rootElementId || "";
+
     this.initialize();
     this.injectStyles();
     this.setupEventListenersForRequiredFields();
@@ -42,7 +44,15 @@ class RahuiWidget {
      * Create and append a div element to the document body
      */
     const container = document.createElement("div");
-    document.body.appendChild(container);
+    if (
+      import.meta.env.VITE_TEST_ROOT_ELEMENT === "true" &&
+      Boolean(this.rootElementId.length)
+    ) {
+      const rootElement = document.getElementById(this.rootElementId);
+      rootElement && rootElement.appendChild(container);
+    } else {
+      document.body.appendChild(container);
+    }
 
     /**
      * Create a container for the widget and add the following classes:- `widget__container`
@@ -430,10 +440,18 @@ class RahuiWidget {
   }
 }
 
+const testRootElementId = "test-root-element";
+if (import.meta.env.VITE_TEST_ROOT_ELEMENT === "true") {
+  const testRootElement = document.createElement("div");
+  testRootElement.id = testRootElementId;
+  document.body.appendChild(testRootElement);
+}
+
 function initializeWidget(config: WidgetConfig) {
   return new RahuiWidget(config);
 }
 
 initializeWidget({
   apiKey: "b7511851-0a8b-4ee4-b14c-09e33d453cfd",
+  rootElementId: testRootElementId,
 });
