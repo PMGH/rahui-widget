@@ -427,11 +427,7 @@ if (import.meta.env.VITE_IS_DEVELOPMENT === "true") {
     document.body.appendChild(testRootElement);
   }
 
-  function initializeWidget(config: WidgetConfig) {
-    return new RahuiWidget(config);
-  }
-
-  initializeWidget({
+  new RahuiWidget({
     apiKey: "b7511851-0a8b-4ee4-b14c-09e33d453cfd",
     rootElementId: testRootElementId,
     content: {
@@ -440,3 +436,5 @@ if (import.meta.env.VITE_IS_DEVELOPMENT === "true") {
     },
   });
 }
+
+window.RahuiWidget = RahuiWidget;

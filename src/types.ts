@@ -57,3 +57,10 @@ export type OpeningHours = {
     open_at: string;
   };
 };
+
+declare global {
+  interface Window {
+    RahuiWidget: any;
+  }
+}
+window.RahuiWidget = window.RahuiWidget || {};
