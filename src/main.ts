@@ -15,8 +15,10 @@ import "wc-datepicker/dist/themes/light.css";
 class RahuiWidget {
   apiKey = "";
   rootElementId = "";
+
   widgetContainer = null as unknown as HTMLDivElement;
   form = null as unknown as HTMLElement | null;
+
   formId = "rahui-booking-form";
   datePickerId = "date-picker";
   timePickerHoursId = "time-picker-hours";
@@ -28,11 +30,12 @@ class RahuiWidget {
   errorMessageElementId = "error-message";
 
   // Widget content
-  heading = "Book a table";
+  heading = "";
 
-  constructor({ apiKey, rootElementId }: WidgetConfig) {
+  constructor({ apiKey, rootElementId, content }: WidgetConfig) {
     this.apiKey = apiKey;
     this.rootElementId = rootElementId || "";
+    this.heading = content?.heading || "Book a table";
 
     this.initialize();
     this.injectStyles();
@@ -442,4 +445,7 @@ function initializeWidget(config: WidgetConfig) {
 initializeWidget({
   apiKey: "b7511851-0a8b-4ee4-b14c-09e33d453cfd",
   rootElementId: testRootElementId,
+  content: {
+    heading: "Reserve a table",
+  },
 });
