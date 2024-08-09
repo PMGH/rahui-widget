@@ -19,6 +19,7 @@ export type Datepicker = HTMLElement & {
 
 export type WidgetConfig = {
   apiKey: string;
+  rootElementId?: string;
 };
 
 export type Booking = {
