@@ -151,18 +151,14 @@ class RahuiWidget {
   }
 
   async getWidgetSettings() {
-    const {
-      VITE_IS_PRODUCTION,
-      VITE_RAHUI_BOOKING_LOCAL_SERVER_URL,
-      VITE_RAHUI_BOOKING_PRODUCTION_SERVER_URL,
-      VITE_RAHUI_BOOKING_WIDGET_SETTINGS_PATH,
-    } = import.meta.env;
+    const { VITE_IS_PRODUCTION, VITE_RAHUI_BOOKING_LOCAL_SERVER_URL } =
+      import.meta.env;
 
     const base_url =
       VITE_IS_PRODUCTION === "true"
-        ? VITE_RAHUI_BOOKING_PRODUCTION_SERVER_URL
+        ? "https://rahui-booking.com"
         : VITE_RAHUI_BOOKING_LOCAL_SERVER_URL;
-    const url = `${base_url}/${VITE_RAHUI_BOOKING_WIDGET_SETTINGS_PATH}`;
+    const url = `${base_url}/api/widgets/settings`;
 
     const response = await fetch(url, {
       headers: {
@@ -200,23 +196,19 @@ class RahuiWidget {
   }
 
   async getOpeningHours(date = undefined) {
-    const {
-      VITE_IS_PRODUCTION,
-      VITE_RAHUI_BOOKING_LOCAL_SERVER_URL,
-      VITE_RAHUI_BOOKING_PRODUCTION_SERVER_URL,
-      VITE_RAHUI_BOOKING_WIDGET_OPENING_HOURS_PATH,
-    } = import.meta.env;
+    const { VITE_IS_PRODUCTION, VITE_RAHUI_BOOKING_LOCAL_SERVER_URL } =
+      import.meta.env;
 
     const base_url =
       VITE_IS_PRODUCTION === "true"
-        ? VITE_RAHUI_BOOKING_PRODUCTION_SERVER_URL
+        ? "https://rahui-booking.com"
         : VITE_RAHUI_BOOKING_LOCAL_SERVER_URL;
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const query =
       date && timezone ? `?date=${date}&timezone=${timezone}` : undefined;
     const url = query
-      ? `${base_url}/${VITE_RAHUI_BOOKING_WIDGET_OPENING_HOURS_PATH}${query}`
-      : `${base_url}/${VITE_RAHUI_BOOKING_WIDGET_OPENING_HOURS_PATH}`;
+      ? `${base_url}/api/widgets/opening_hours${query}`
+      : `${base_url}/api/widgets/opening_hours`;
 
     const response = await fetch(url, {
       headers: {
@@ -257,18 +249,14 @@ class RahuiWidget {
   }
 
   async forwardFormSubmissionToServer(payload: Payload) {
-    const {
-      VITE_IS_PRODUCTION,
-      VITE_RAHUI_BOOKING_LOCAL_SERVER_URL,
-      VITE_RAHUI_BOOKING_PRODUCTION_SERVER_URL,
-      VITE_RAHUI_BOOKING_WIDGET_CREATE_BOOKING_PATH,
-    } = import.meta.env;
+    const { VITE_IS_PRODUCTION, VITE_RAHUI_BOOKING_LOCAL_SERVER_URL } =
+      import.meta.env;
 
     const base_url =
       VITE_IS_PRODUCTION === "true"
-        ? VITE_RAHUI_BOOKING_PRODUCTION_SERVER_URL
+        ? "https://rahui-booking.com"
         : VITE_RAHUI_BOOKING_LOCAL_SERVER_URL;
-    const url = `${base_url}/${VITE_RAHUI_BOOKING_WIDGET_CREATE_BOOKING_PATH}`;
+    const url = `${base_url}/api/widgets/create_booking`;
 
     console.log({ payload });
 
