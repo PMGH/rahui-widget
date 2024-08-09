@@ -10,7 +10,6 @@ import {
 } from "./types";
 import { defineCustomElements } from "wc-datepicker/dist/loader";
 
-// Importing a theme is optional.
 import "wc-datepicker/dist/themes/light.css";
 
 class RahuiWidget {
