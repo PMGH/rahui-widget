@@ -25,6 +25,7 @@ export type WidgetConfig = {
   apiKey: string;
   rootElementId?: string;
   content?: WidgetConfigContent;
+  localServerBaseUrl?: string;
 };
 
 export type Booking = {

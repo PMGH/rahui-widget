@@ -15,10 +15,13 @@ import "wc-datepicker/dist/themes/light.css";
 class RahuiWidget {
   apiKey = "";
   rootElementId = "";
+  apiBaseUrl = "";
+  defaultRequestHeaders: {};
 
   widgetContainer = null as unknown as HTMLDivElement;
   form = null as unknown as HTMLElement | null;
 
+  // DOM Element IDs
   formId = "rahui-booking-form";
   datePickerId = "date-picker";
   timePickerHoursId = "time-picker-hours";
@@ -29,13 +32,28 @@ class RahuiWidget {
   confirmationBookingCoversElementId = "confirmation-booking-number-of-covers";
   errorMessageElementId = "error-message";
 
+  // Development
+  localServerBaseUrl;
+
   // Widget content
   heading = "";
   buttonText = "";
 
-  constructor({ apiKey, rootElementId, content }: WidgetConfig) {
+  constructor({
+    apiKey,
+    rootElementId,
+    content,
+    localServerBaseUrl,
+  }: WidgetConfig) {
     this.apiKey = apiKey;
     this.rootElementId = rootElementId || "";
+    this.localServerBaseUrl = localServerBaseUrl;
+    this.apiBaseUrl = localServerBaseUrl || "https://rahui-booking.com";
+    this.defaultRequestHeaders = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${this.apiKey}`,
+    };
+
     this.heading = content?.heading || "Book a table";
     this.buttonText = content?.buttonText || "Create booking";
 
@@ -112,14 +130,6 @@ class RahuiWidget {
     this.getOpeningHours();
   }
 
-  apiBaseUrl() {
-    const { VITE_IS_DEVELOPMENT, VITE_RAHUI_BOOKING_LOCAL_SERVER_URL } =
-      import.meta.env;
-    return VITE_IS_DEVELOPMENT === "true"
-      ? VITE_RAHUI_BOOKING_LOCAL_SERVER_URL
-      : "https://rahui-booking.com";
-  }
-
   async formSubmit(e: any) {
     e.preventDefault();
     const data = new FormData(e.target);
@@ -161,13 +171,10 @@ class RahuiWidget {
   }
 
   async getWidgetSettings() {
-    const url = `${this.apiBaseUrl()}/api/widgets/settings`;
+    const url = `${this.apiBaseUrl}/api/widgets/settings`;
 
     const response = await fetch(url, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${this.apiKey}`,
-      },
+      headers: this.defaultRequestHeaders,
       method: "GET",
     });
 
@@ -203,14 +210,11 @@ class RahuiWidget {
     const query =
       date && timezone ? `?date=${date}&timezone=${timezone}` : undefined;
     const url = query
-      ? `${this.apiBaseUrl()}/api/widgets/opening_hours${query}`
-      : `${this.apiBaseUrl()}/api/widgets/opening_hours`;
+      ? `${this.apiBaseUrl}/api/widgets/opening_hours${query}`
+      : `${this.apiBaseUrl}/api/widgets/opening_hours`;
 
     const response = await fetch(url, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${this.apiKey}`,
-      },
+      headers: this.defaultRequestHeaders,
       method: "GET",
     });
 
@@ -245,14 +249,11 @@ class RahuiWidget {
   }
 
   async forwardFormSubmissionToServer(payload: Payload) {
-    const url = `${this.apiBaseUrl()}/api/widgets/create_booking`;
+    const url = `${this.apiBaseUrl}/api/widgets/create_booking`;
 
     if (url && payload) {
       const response = await fetch(url, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${this.apiKey}`,
-        },
+        headers: this.defaultRequestHeaders,
         method: "POST",
         body: JSON.stringify(payload),
       });
@@ -426,6 +427,7 @@ if (import.meta.env.VITE_IS_DEVELOPMENT === "true") {
       heading: "Reserve a table",
       buttonText: "Create Reservation",
     },
+    localServerBaseUrl: "http://localhost:3001",
   });
 }
 
