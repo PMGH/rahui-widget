@@ -1,4 +1,3 @@
-import { styles } from "./assets.js";
 import { getWidgetContent } from "./content.js";
 import {
   Booking,
@@ -10,6 +9,7 @@ import {
 } from "./types";
 import { WcDatepicker } from "wc-datepicker/dist/components/wc-datepicker";
 
+import "./styles/global.scss";
 import "wc-datepicker/dist/themes/light.css";
 
 class RahuiWidget {
@@ -40,7 +40,6 @@ class RahuiWidget {
     this.buttonText = content?.buttonText || "Create booking";
 
     this.initialize();
-    this.injectStyles();
     this.setupEventListenersForRequiredFields();
   }
 
@@ -343,12 +342,6 @@ class RahuiWidget {
       timePickerHoursId: this.timePickerHoursId,
       timePickerMinutesId: this.timePickerMinutesId,
     });
-  }
-
-  injectStyles() {
-    const styleTag = document.createElement("style");
-    styleTag.innerHTML = styles.replace(/^\s+|\n/gm, "");
-    document.head.appendChild(styleTag);
   }
 
   setupEventListenersForRequiredFields() {
