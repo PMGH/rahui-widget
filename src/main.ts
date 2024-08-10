@@ -8,7 +8,7 @@ import {
   WidgetSettings,
   type Payload,
 } from "./types";
-import { defineCustomElements } from "wc-datepicker/dist/loader";
+import { WcDatepicker } from "wc-datepicker/dist/components/wc-datepicker";
 
 import "wc-datepicker/dist/themes/light.css";
 
@@ -86,7 +86,7 @@ class RahuiWidget {
      * Setup date picker using wc-datepicker
      * https://sqrrl.github.io/wc-datepicker/
      */
-    defineCustomElements();
+    customElements.define("wc-datepicker", WcDatepicker);
     const datepicker = document.getElementById(this.datePickerId) as Datepicker;
     if (datepicker) {
       // Disable dates before today
