@@ -15,6 +15,7 @@ import "wc-datepicker/dist/themes/light.css";
 class RahuiWidget {
   apiKey = "";
   rootElementId = "";
+  defaultRequestHeaders: {};
 
   widgetContainer = null as unknown as HTMLDivElement;
   form = null as unknown as HTMLElement | null;
@@ -36,6 +37,10 @@ class RahuiWidget {
   constructor({ apiKey, rootElementId, content }: WidgetConfig) {
     this.apiKey = apiKey;
     this.rootElementId = rootElementId || "";
+    this.defaultRequestHeaders = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${this.apiKey}`,
+    };
     this.heading = content?.heading || "Book a table";
     this.buttonText = content?.buttonText || "Create booking";
 
@@ -164,10 +169,7 @@ class RahuiWidget {
     const url = `${this.apiBaseUrl()}/api/widgets/settings`;
 
     const response = await fetch(url, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${this.apiKey}`,
-      },
+      headers: this.defaultRequestHeaders,
       method: "GET",
     });
 
@@ -207,10 +209,7 @@ class RahuiWidget {
       : `${this.apiBaseUrl()}/api/widgets/opening_hours`;
 
     const response = await fetch(url, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${this.apiKey}`,
-      },
+      headers: this.defaultRequestHeaders,
       method: "GET",
     });
 
@@ -249,10 +248,7 @@ class RahuiWidget {
 
     if (url && payload) {
       const response = await fetch(url, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${this.apiKey}`,
-        },
+        headers: this.defaultRequestHeaders,
         method: "POST",
         body: JSON.stringify(payload),
       });
