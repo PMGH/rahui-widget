@@ -46,16 +46,14 @@ class RahuiWidget {
 
   async initialize() {
     /**
-     * Create and append a div element to the document body
+     * Create and append a div element to the document body or use the rootElement provided via Widget config
      */
-    const container = document.createElement("div");
-    if (
-      import.meta.env.VITE_TEST_ROOT_ELEMENT === "true" &&
-      Boolean(this.rootElementId.length)
-    ) {
-      const rootElement = document.getElementById(this.rootElementId);
-      rootElement && rootElement.appendChild(container);
+    let rootElement;
+    let container;
+    if (Boolean(this.rootElementId.length)) {
+      rootElement = document.getElementById(this.rootElementId);
     } else {
+      container = document.createElement("div");
       document.body.appendChild(container);
     }
 
@@ -66,14 +64,14 @@ class RahuiWidget {
     this.widgetContainer.classList.add("widget__container");
 
     /**
-     * Invoke the `createWidget()` method
+     * Invoke the `createWidget()` method to populate the Widget
      */
     this.createWidgetContent();
 
     /**
-     * Append the widget's content to the container
+     * Append the widget's content to the rootElement or container
      */
-    container.appendChild(this.widgetContainer);
+    (rootElement || container)?.appendChild(this.widgetContainer);
 
     /**
      * Add event listener to use custom form submission
@@ -421,7 +419,8 @@ class RahuiWidget {
 
 if (import.meta.env.VITE_IS_DEVELOPMENT === "true") {
   const testRootElementId = "test-root-element";
-  if (import.meta.env.VITE_TEST_ROOT_ELEMENT === "true") {
+  const isRootElementTest = import.meta.env.VITE_TEST_ROOT_ELEMENT === "true";
+  if (isRootElementTest) {
     const testRootElement = document.createElement("div");
     testRootElement.id = testRootElementId;
     document.body.appendChild(testRootElement);
@@ -429,7 +428,7 @@ if (import.meta.env.VITE_IS_DEVELOPMENT === "true") {
 
   new RahuiWidget({
     apiKey: "b7511851-0a8b-4ee4-b14c-09e33d453cfd",
-    rootElementId: testRootElementId,
+    rootElementId: isRootElementTest ? testRootElementId : undefined,
     content: {
       heading: "Reserve a table",
       buttonText: "Create Reservation",
