@@ -1,21 +1,21 @@
-export const styles = `
-  .widget__container * {
+.widget__container {
+  box-shadow: 0 0 18px 8px rgba(0, 0, 0, 0.1), 0 0 32px 32px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  overflow: auto;
+  transition: max-height 0.2s ease;
+  font-family: Helvetica, Arial, sans-serif;
+  background-color: white;
+  border-radius: 10px;
+  box-sizing: border-box;
+  * {
     box-sizing: border-box;
     font-size: 16px;
-  }        
-  h3, p, input {
+  }
+  h3,
+  p,
+  input {
     margin: 0;
     padding: 0;
-  }
-  .widget__container {
-    box-shadow: 0 0 18px 8px rgba(0, 0, 0, 0.1), 0 0 32px 32px rgba(0, 0, 0, 0.08);
-    width: 100%;
-    overflow: auto;
-    transition: max-height .2s ease;
-    font-family: Helvetica, Arial ,sans-serif;
-    background-color: white;
-    border-radius: 10px;
-    box-sizing: border-box;
   }
   .widget__header {
     padding: 1.5rem 2rem;
@@ -96,7 +96,7 @@ export const styles = `
     height: 48px;
   }
   .form__field textarea::placeholder {
-    font-family: Helvetica, Arial ,sans-serif;
+    font-family: Helvetica, Arial, sans-serif;
   }
   form button {
     height: 48px;
@@ -110,6 +110,7 @@ export const styles = `
   }
   form button:hover {
     background-color: #1d1d20;
+    color: white;
   }
   .form__field__group {
     display: flex;
@@ -126,12 +127,17 @@ export const styles = `
   wc-datepicker {
     justify-content: center;
   }
-  .wc-datepicker__previous-month-button:hover,
-  .wc-datepicker__next-month-button:hover {
-    color: white;
+  .wc-datepicker__previous-month-button,
+  .wc-datepicker__next-month-button {
+    flex-shrink: unset;
+    height: auto;
   }
   .wc-datepicker__current-month {
     align-items: center;
+  }
+  select.wc-datepicker__month-select,
+  input.wc-datepicker__year-select {
+    border: 1px solid lightgrey;
   }
   select.wc-datepicker__month-select {
     font-weight: bold;
@@ -228,4 +234,4 @@ export const styles = `
       margin-left: 1rem;
     }
   }
-`;
+}
