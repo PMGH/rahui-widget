@@ -101,7 +101,8 @@ class RahuiWidget {
      * Setup date picker using wc-datepicker
      * https://sqrrl.github.io/wc-datepicker/
      */
-    customElements.define("wc-datepicker", WcDatepicker);
+    customElements.get("wc-datepicker") ||
+      customElements.define("wc-datepicker", WcDatepicker);
     const datepicker = document.getElementById(this.datePickerId) as Datepicker;
     if (datepicker) {
       // Disable dates before today
