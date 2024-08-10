@@ -21,6 +21,7 @@ class RahuiWidget {
   widgetContainer = null as unknown as HTMLDivElement;
   form = null as unknown as HTMLElement | null;
 
+  // DOM Element IDs
   formId = "rahui-booking-form";
   datePickerId = "date-picker";
   timePickerHoursId = "time-picker-hours";
@@ -31,24 +32,28 @@ class RahuiWidget {
   confirmationBookingCoversElementId = "confirmation-booking-number-of-covers";
   errorMessageElementId = "error-message";
 
+  // Development
+  localServerBaseUrl;
+
   // Widget content
   heading = "";
   buttonText = "";
 
-  constructor({ apiKey, rootElementId, content }: WidgetConfig) {
-    const { VITE_IS_DEVELOPMENT, VITE_RAHUI_BOOKING_LOCAL_SERVER_URL } =
-      import.meta.env;
-
+  constructor({
+    apiKey,
+    rootElementId,
+    content,
+    localServerBaseUrl,
+  }: WidgetConfig) {
     this.apiKey = apiKey;
     this.rootElementId = rootElementId || "";
-    this.apiBaseUrl =
-      VITE_IS_DEVELOPMENT === "true"
-        ? VITE_RAHUI_BOOKING_LOCAL_SERVER_URL
-        : "https://rahui-booking.com";
+    this.localServerBaseUrl = localServerBaseUrl;
+    this.apiBaseUrl = localServerBaseUrl || "https://rahui-booking.com";
     this.defaultRequestHeaders = {
       "Content-Type": "application/json",
       Authorization: `Bearer ${this.apiKey}`,
     };
+
     this.heading = content?.heading || "Book a table";
     this.buttonText = content?.buttonText || "Create booking";
 
@@ -422,6 +427,7 @@ if (import.meta.env.VITE_IS_DEVELOPMENT === "true") {
       heading: "Reserve a table",
       buttonText: "Create Reservation",
     },
+    localServerBaseUrl: "http://localhost:3001",
   });
 }
 
