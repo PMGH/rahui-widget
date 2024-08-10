@@ -13,6 +13,7 @@
     "vite": "^5.3.4"
   },
   "dependencies": {
+    "vite-plugin-css-injected-by-js": "^3.5.1",
     "wc-datepicker": "^0.5.3"
   }
 }
