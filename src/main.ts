@@ -15,6 +15,7 @@ import "wc-datepicker/dist/themes/light.css";
 class RahuiWidget {
   apiKey = "";
   rootElementId = "";
+  apiBaseUrl = "";
   defaultRequestHeaders: {};
 
   widgetContainer = null as unknown as HTMLDivElement;
@@ -35,8 +36,15 @@ class RahuiWidget {
   buttonText = "";
 
   constructor({ apiKey, rootElementId, content }: WidgetConfig) {
+    const { VITE_IS_DEVELOPMENT, VITE_RAHUI_BOOKING_LOCAL_SERVER_URL } =
+      import.meta.env;
+
     this.apiKey = apiKey;
     this.rootElementId = rootElementId || "";
+    this.apiBaseUrl =
+      VITE_IS_DEVELOPMENT === "true"
+        ? VITE_RAHUI_BOOKING_LOCAL_SERVER_URL
+        : "https://rahui-booking.com";
     this.defaultRequestHeaders = {
       "Content-Type": "application/json",
       Authorization: `Bearer ${this.apiKey}`,
@@ -117,14 +125,6 @@ class RahuiWidget {
     this.getOpeningHours();
   }
 
-  apiBaseUrl() {
-    const { VITE_IS_DEVELOPMENT, VITE_RAHUI_BOOKING_LOCAL_SERVER_URL } =
-      import.meta.env;
-    return VITE_IS_DEVELOPMENT === "true"
-      ? VITE_RAHUI_BOOKING_LOCAL_SERVER_URL
-      : "https://rahui-booking.com";
-  }
-
   async formSubmit(e: any) {
     e.preventDefault();
     const data = new FormData(e.target);
@@ -166,7 +166,7 @@ class RahuiWidget {
   }
 
   async getWidgetSettings() {
-    const url = `${this.apiBaseUrl()}/api/widgets/settings`;
+    const url = `${this.apiBaseUrl}/api/widgets/settings`;
 
     const response = await fetch(url, {
       headers: this.defaultRequestHeaders,
@@ -205,8 +205,8 @@ class RahuiWidget {
     const query =
       date && timezone ? `?date=${date}&timezone=${timezone}` : undefined;
     const url = query
-      ? `${this.apiBaseUrl()}/api/widgets/opening_hours${query}`
-      : `${this.apiBaseUrl()}/api/widgets/opening_hours`;
+      ? `${this.apiBaseUrl}/api/widgets/opening_hours${query}`
+      : `${this.apiBaseUrl}/api/widgets/opening_hours`;
 
     const response = await fetch(url, {
       headers: this.defaultRequestHeaders,
@@ -244,7 +244,7 @@ class RahuiWidget {
   }
 
   async forwardFormSubmissionToServer(payload: Payload) {
-    const url = `${this.apiBaseUrl()}/api/widgets/create_booking`;
+    const url = `${this.apiBaseUrl}/api/widgets/create_booking`;
 
     if (url && payload) {
       const response = await fetch(url, {
