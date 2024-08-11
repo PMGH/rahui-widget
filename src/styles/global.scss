@@ -64,6 +64,14 @@
   }
   form {
     padding: 2rem 1rem 1.5rem;
+    .form-group-right {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      @media screen and (min-width: 768px) {
+        align-self: flex-start;
+      }
+    }
     .form__field {
       margin-bottom: 1.5rem;
       display: flex;
@@ -80,12 +88,6 @@
           flex-flow: row nowrap;
         }
       }
-      &.number-of-covers {
-        @media screen and (min-width: 768px) {
-          align-self: flex-start;
-        }
-      }
-      &.number-of-covers,
       &.last-name {
         @media screen and (min-width: 768px) {
           margin-left: 1rem;
