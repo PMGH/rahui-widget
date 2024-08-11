@@ -70,71 +70,72 @@ export const getWidgetContent = ({
           </select>
         </div>
       </div>
-      <div class="form__field form__field__required number-of-covers">
-        <div class="form__field__required">
-          <label id="number_of_covers_label" for="booking[number_of_covers]">Guests</label><span class="required-field-symbol">*</span>
+      <div class="form-group-right">
+        <div class="form__field form__field__required">
+          <div class="form__field__required">
+            <label id="number_of_covers_label" for="booking[number_of_covers]">Guests</label><span class="required-field-symbol">*</span>
+          </div>
+          <input
+            type="number"
+            id="number_of_covers"
+            name="booking[number_of_covers]"
+            placeholder="1"
+            min="1"
+            required
+          />
         </div>
-        <input
-          type="number"
-          id="number_of_covers"
-          name="booking[number_of_covers]"
-          placeholder="1"
-          min="1"
-          required
-        />
+        <section class="customer-details">
+          <div class="form__field__group">
+            <div class="form__field">
+              <div class="form__field__required">
+                <label for="customer[first_name]">First name</label><span class="required-field-symbol" id="customer_first_name_required_symbol">*</span>
+              </div>
+              <input
+                type="text"
+                id="customer_first_name"
+                name="customer[first_name]"
+                placeholder="Enter your first name"
+                required
+              />
+            </div>
+            <div class="form__field last-name">
+              <div class="form__field__required">
+                <label for="customer[last_name]">Last name</label><span class="required-field-symbol" id="customer_last_name_required_symbol">*</span>
+              </div>
+              <input
+                type="text"
+                id="customer_last_name"
+                name="customer[last_name]"
+                placeholder="Enter your last name"
+                required
+              />
+            </div>
+          </div>
+          <div class="form__field">
+            <div class="form__field__required">
+              <label for="customer[email]">Email</label><span class="required-field-symbol">*</span>
+            </div>
+            <p class="info muted">We send the booking confirmation to this email address</p>
+            <input
+              type="email"
+              id="email"
+              name="customer[email]"
+              placeholder="Enter your email address"
+            />
+          </div>
+          <div class="form__field">
+            <label for="customer[phone]">Phone number</label>
+            <p class="info muted">We may use this to contact you about your booking</p>
+            <input
+              type="phone"
+              id="phone"
+              name="customer[phone]"
+              placeholder="Enter your phone number"
+            />
+          </div>
+        </section>
       </div>
     </div>
-
-    <section class="customer-details">
-      <div class="form__field__group">
-        <div class="form__field">
-          <div class="form__field__required">
-            <label for="customer[first_name]">First name</label><span class="required-field-symbol" id="customer_first_name_required_symbol">*</span>
-          </div>
-          <input
-            type="text"
-            id="customer_first_name"
-            name="customer[first_name]"
-            placeholder="Enter your first name"
-            required
-          />
-        </div>
-        <div class="form__field last-name">
-          <div class="form__field__required">
-            <label for="customer[last_name]">Last name</label><span class="required-field-symbol" id="customer_last_name_required_symbol">*</span>
-          </div>
-          <input
-            type="text"
-            id="customer_last_name"
-            name="customer[last_name]"
-            placeholder="Enter your last name"
-            required
-          />
-        </div>
-      </div>
-      <div class="form__field">
-        <div class="form__field__required">
-          <label for="customer[email]">Email</label><span class="required-field-symbol">*</span>
-        </div>
-        <p class="info muted">We send the booking confirmation to this email address</p>
-        <input
-          type="email"
-          id="email"
-          name="customer[email]"
-          placeholder="Enter your email address"
-        />
-      </div>
-      <div class="form__field">
-        <label for="customer[phone]">Phone number</label>
-        <p class="info muted">We may use this to contact you about your booking</p>
-        <input
-          type="phone"
-          id="phone"
-          name="customer[phone]"
-          placeholder="Enter your phone number"
-        />
-      </div>
-    </section>
 
     <div class="form__field">
       <label for="booking[notes]">Notes</label>
