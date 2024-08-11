@@ -412,7 +412,8 @@ class RahuiWidget {
   }
 }
 
-if (import.meta.env.VITE_IS_DEVELOPMENT === "true") {
+// The build is using injected env vars from .env so we need to use VITE_IS_PRODUCTION to mean we don't need to reset the .env vars each time we do a build
+if (import.meta.env.MODE === "development") {
   const testRootElementId = "test-root-element";
   const isRootElementTest = import.meta.env.VITE_TEST_ROOT_ELEMENT === "true";
   if (isRootElementTest) {
