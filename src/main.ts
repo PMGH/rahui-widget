@@ -200,8 +200,11 @@ class RahuiWidget {
       "number_of_covers"
     ) as HTMLInputElement;
     if (maxCoversPerBooking && numberOfCoversLabel && numberOfCoversInput) {
+      const maxCoversPerBookingText = ` (max: ${maxCoversPerBooking})`;
       numberOfCoversLabel.textContent =
-        numberOfCoversLabel.textContent + ` (max: ${maxCoversPerBooking})`;
+        numberOfCoversLabel.textContent?.includes(maxCoversPerBookingText)
+          ? numberOfCoversLabel.textContent
+          : numberOfCoversLabel.textContent + ` (max: ${maxCoversPerBooking})`;
       numberOfCoversInput.max = String(maxCoversPerBooking);
     }
   }
