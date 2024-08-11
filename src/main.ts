@@ -59,7 +59,6 @@ class RahuiWidget {
 
     this.initialize();
     this.setupEventListenersForRequiredFields();
-    console.log({ mode: import.meta.env.MODE });
   }
 
   async initialize() {
