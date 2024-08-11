@@ -103,9 +103,6 @@ class RahuiWidget {
      */
     customElements.get("wc-datepicker") ||
       customElements.define("wc-datepicker", WcDatepicker);
-
-    console.log("test edit ts file for precommit hook");
-
     const datepicker = document.getElementById(this.datePickerId) as Datepicker;
     if (datepicker) {
       // Disable dates before today
