@@ -48,7 +48,7 @@ class RahuiWidget {
     this.apiKey = apiKey;
     this.rootElementId = rootElementId || "";
     this.localServerBaseUrl = localServerBaseUrl;
-    this.apiBaseUrl = localServerBaseUrl || "https://rahui-booking.com";
+    this.apiBaseUrl = localServerBaseUrl || "https://www.rahui-booking.com";
     this.defaultRequestHeaders = {
       "Content-Type": "application/json",
       Authorization: `Bearer ${this.apiKey}`,
