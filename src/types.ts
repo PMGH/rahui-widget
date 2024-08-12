@@ -49,7 +49,10 @@ export type WidgetContentProps = WidgetConfigContent & {
 };
 
 export type WidgetSettings = {
+  button_text: string;
+  heading_text: string;
   max_covers_per_booking: number;
+  root_element_id: string;
 };
 export type OpeningHours = {
   opening_hours: {

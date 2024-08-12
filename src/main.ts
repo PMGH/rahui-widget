@@ -188,11 +188,12 @@ class RahuiWidget {
   }
 
   applySettings(settings: WidgetSettings) {
-    this.setMaxCoversPerBooking(settings);
+    console.log({ settings });
+    const { max_covers_per_booking } = settings;
+    this.setMaxCoversPerBooking(max_covers_per_booking);
   }
 
-  setMaxCoversPerBooking(settings: WidgetSettings) {
-    const maxCoversPerBooking = settings.max_covers_per_booking;
+  setMaxCoversPerBooking(maxCoversPerBooking: number) {
     const numberOfCoversLabel = document.getElementById(
       "number_of_covers_label"
     );
