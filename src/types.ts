@@ -26,6 +26,7 @@ export type WidgetConfig = {
   apiKey: string;
   localServerBaseUrl?: string;
   rootElementIdOverride?: string;
+  widgetPreview?: boolean;
 };
 
 export type Booking = {
@@ -46,6 +47,7 @@ export type WidgetContentProps = WidgetConfigContent & {
   datePickerId: string;
   timePickerHoursId: string;
   timePickerMinutesId: string;
+  widgetPreview: boolean;
 };
 
 export type WidgetSettings = {

@@ -36,6 +36,7 @@ class RahuiWidget {
 
   // User Defined Widget Settings
   rootElementId = "";
+  widgetPreview = false;
   heading = "";
   buttonText = "";
   maxCoversPerBooking: number | undefined;
@@ -44,6 +45,7 @@ class RahuiWidget {
     apiKey,
     localServerBaseUrl,
     rootElementIdOverride,
+    widgetPreview,
   }: WidgetConfig) {
     this.rootElementId;
     this.apiKey = apiKey;
@@ -54,6 +56,7 @@ class RahuiWidget {
     };
     this.localServerBaseUrl = localServerBaseUrl;
     this.rootElementIdOverride = rootElementIdOverride;
+    this.widgetPreview = widgetPreview || false;
     this.heading = "Book a table";
     this.buttonText = "Create booking";
 
@@ -325,6 +328,7 @@ class RahuiWidget {
       datePickerId: this.datePickerId,
       timePickerHoursId: this.timePickerHoursId,
       timePickerMinutesId: this.timePickerMinutesId,
+      widgetPreview: this.widgetPreview,
     });
   }
 

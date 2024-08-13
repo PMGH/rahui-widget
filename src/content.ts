@@ -9,6 +9,7 @@ export const getWidgetContent = ({
   maxCoversPerBooking,
   timePickerHoursId,
   timePickerMinutesId,
+  widgetPreview,
 }: WidgetContentProps) => `
   <header class="widget__header">
     <h3>${heading}</h3>
@@ -150,6 +151,8 @@ export const getWidgetContent = ({
       ></textarea>
     </div>
 
-    <button type="submit">${buttonText}</button>
+    <button type="submit" ${
+      widgetPreview ? "disabled=true" : ""
+    }>${buttonText}</button>
   </form>
 `;
