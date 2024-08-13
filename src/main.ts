@@ -13,10 +13,11 @@ import "./styles/global.scss";
 import "wc-datepicker/dist/themes/light.css";
 
 class RahuiWidget {
-  apiKey = "";
   rootElementId = "";
+  apiKey = "";
   apiBaseUrl = "";
   defaultRequestHeaders: {};
+  maxCoversPerBooking: number | undefined;
 
   widgetContainer = null as unknown as HTMLDivElement;
   form = null as unknown as HTMLElement | null;
@@ -39,14 +40,9 @@ class RahuiWidget {
   heading = "";
   buttonText = "";
 
-  constructor({
-    apiKey,
-    rootElementId,
-    content,
-    localServerBaseUrl,
-  }: WidgetConfig) {
+  constructor({ apiKey, localServerBaseUrl }: WidgetConfig) {
+    this.rootElementId;
     this.apiKey = apiKey;
-    this.rootElementId = rootElementId || "";
     this.localServerBaseUrl = localServerBaseUrl;
     this.apiBaseUrl = localServerBaseUrl || "https://www.rahui-booking.com";
     this.defaultRequestHeaders = {
@@ -54,45 +50,35 @@ class RahuiWidget {
       Authorization: `Bearer ${this.apiKey}`,
     };
 
-    this.heading = content?.heading || "Book a table";
-    this.buttonText = content?.buttonText || "Create booking";
+    this.heading = "Book a table";
+    this.buttonText = "Create booking";
 
     this.initialize();
-    this.setupEventListenersForRequiredFields();
   }
 
   async initialize() {
-    /**
-     * Create and append a div element to the document body or use the rootElement provided via Widget config
-     */
+    await this.getWidgetSettings();
+    this.setupWidget();
+  }
+
+  setupWidget() {
     let rootElement;
     let container;
+
+    // Create widget container, populate it and append it to the rootElement
+    this.widgetContainer = document.createElement("div");
+    this.widgetContainer.classList.add("widget__container");
+    this.createWidgetContent();
+
     if (Boolean(this.rootElementId.length)) {
       rootElement = document.getElementById(this.rootElementId);
     } else {
       container = document.createElement("div");
       document.body.appendChild(container);
     }
-
-    /**
-     * Create a container for the widget and add the following classes:- `widget__container`
-     */
-    this.widgetContainer = document.createElement("div");
-    this.widgetContainer.classList.add("widget__container");
-
-    /**
-     * Invoke the `createWidget()` method to populate the Widget
-     */
-    this.createWidgetContent();
-
-    /**
-     * Append the widget's content to the rootElement or container
-     */
     (rootElement || container)?.appendChild(this.widgetContainer);
 
-    /**
-     * Add event listener to use custom form submission
-     */
+    // Customise form submission
     this.form = document.getElementById(this.formId);
     this.form &&
       this.form.addEventListener("submit", this.formSubmit.bind(this));
@@ -123,52 +109,8 @@ class RahuiWidget {
         this.getOpeningHours(event.detail);
       });
     }
-
-    /**
-     * Get settings and opening hours from the server
-     */
-    this.getWidgetSettings();
     this.getOpeningHours();
-  }
-
-  async formSubmit(e: any) {
-    e.preventDefault();
-    const data = new FormData(e.target);
-    const parsedData = Object.fromEntries(data.entries());
-
-    // Booking
-    const date = new Date(parsedData["booking[date]"] as string);
-    const hours = parsedData["booking[time][hours]"] as string;
-    const minutes = parsedData["booking[time][minutes]"] as string;
-    const datetime = new Date(
-      date.setHours(parseInt(hours), parseInt(minutes), 0)
-    );
-    const datetimeUTC = datetime.toUTCString();
-    const numberOfCovers = String(parsedData["booking[number_of_covers]"]);
-    const notes = String(parsedData["booking[notes]"]);
-
-    // Customer
-    const firstName = String(parsedData["customer[first_name]"]);
-    const lastName = String(parsedData["customer[last_name]"]);
-    const email = String(parsedData["customer[email]"]);
-    const phone = String(parsedData["customer[phone]"]);
-
-    const payload: Payload = {
-      "widget-submission": true,
-      booking: {
-        datetime: datetimeUTC,
-        number_of_covers: numberOfCovers,
-        notes,
-      },
-      customer: {
-        first_name: firstName,
-        last_name: lastName,
-        email,
-        phone,
-      },
-    };
-
-    await this.forwardFormSubmissionToServer(payload);
+    this.setupEventListenersForRequiredFields();
   }
 
   async getWidgetSettings() {
@@ -188,26 +130,16 @@ class RahuiWidget {
   }
 
   applySettings(settings: WidgetSettings) {
-    console.log({ settings });
-    const { max_covers_per_booking } = settings;
-    this.setMaxCoversPerBooking(max_covers_per_booking);
-  }
-
-  setMaxCoversPerBooking(maxCoversPerBooking: number) {
-    const numberOfCoversLabel = document.getElementById(
-      "number_of_covers_label"
-    );
-    const numberOfCoversInput = document.getElementById(
-      "number_of_covers"
-    ) as HTMLInputElement;
-    if (maxCoversPerBooking && numberOfCoversLabel && numberOfCoversInput) {
-      const maxCoversPerBookingText = ` (max: ${maxCoversPerBooking})`;
-      numberOfCoversLabel.textContent =
-        numberOfCoversLabel.textContent?.includes(maxCoversPerBookingText)
-          ? numberOfCoversLabel.textContent
-          : numberOfCoversLabel.textContent + ` (max: ${maxCoversPerBooking})`;
-      numberOfCoversInput.max = String(maxCoversPerBooking);
-    }
+    const {
+      button_text,
+      heading_text,
+      max_covers_per_booking,
+      root_element_id,
+    } = settings;
+    this.buttonText = button_text;
+    this.heading = heading_text;
+    this.rootElementId = root_element_id;
+    this.maxCoversPerBooking = max_covers_per_booking;
   }
 
   async getOpeningHours(date = undefined) {
@@ -251,6 +183,46 @@ class RahuiWidget {
       hoursSelect.innerHTML = "";
       hoursSelect.append(...validOptions);
     }
+  }
+
+  async formSubmit(e: any) {
+    e.preventDefault();
+    const data = new FormData(e.target);
+    const parsedData = Object.fromEntries(data.entries());
+
+    // Booking
+    const date = new Date(parsedData["booking[date]"] as string);
+    const hours = parsedData["booking[time][hours]"] as string;
+    const minutes = parsedData["booking[time][minutes]"] as string;
+    const datetime = new Date(
+      date.setHours(parseInt(hours), parseInt(minutes), 0)
+    );
+    const datetimeUTC = datetime.toUTCString();
+    const numberOfCovers = String(parsedData["booking[number_of_covers]"]);
+    const notes = String(parsedData["booking[notes]"]);
+
+    // Customer
+    const firstName = String(parsedData["customer[first_name]"]);
+    const lastName = String(parsedData["customer[last_name]"]);
+    const email = String(parsedData["customer[email]"]);
+    const phone = String(parsedData["customer[phone]"]);
+
+    const payload: Payload = {
+      "widget-submission": true,
+      booking: {
+        datetime: datetimeUTC,
+        number_of_covers: numberOfCovers,
+        notes,
+      },
+      customer: {
+        first_name: firstName,
+        last_name: lastName,
+        email,
+        phone,
+      },
+    };
+
+    await this.forwardFormSubmissionToServer(payload);
   }
 
   async forwardFormSubmissionToServer(payload: Payload) {
@@ -343,6 +315,7 @@ class RahuiWidget {
       heading: this.heading,
       buttonText: this.buttonText,
       formId: this.formId,
+      maxCoversPerBooking: this.maxCoversPerBooking,
       datePickerHiddenInputId: this.datePickerHiddenInputId,
       datePickerId: this.datePickerId,
       timePickerHoursId: this.timePickerHoursId,
@@ -427,11 +400,6 @@ if (Boolean(import.meta.env.DEV)) {
 
   new RahuiWidget({
     apiKey: "b7511851-0a8b-4ee4-b14c-09e33d453cfd",
-    rootElementId: isRootElementTest ? testRootElementId : undefined,
-    content: {
-      heading: "Reserve a table",
-      buttonText: "Create Reservation",
-    },
     localServerBaseUrl: "http://localhost:3001",
   });
 }

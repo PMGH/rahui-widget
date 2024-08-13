@@ -18,13 +18,12 @@ export type Datepicker = HTMLElement & {
 };
 
 type WidgetConfigContent = {
-  heading?: string;
   buttonText?: string;
+  heading?: string;
+  maxCoversPerBooking: number | undefined;
 };
 export type WidgetConfig = {
   apiKey: string;
-  rootElementId?: string;
-  content?: WidgetConfigContent;
   localServerBaseUrl?: string;
 };
 
