@@ -13,16 +13,13 @@ import "./styles/global.scss";
 import "wc-datepicker/dist/themes/light.css";
 
 class RahuiWidget {
-  rootElementId = "";
   apiKey = "";
   apiBaseUrl = "";
   defaultRequestHeaders: {};
-  maxCoversPerBooking: number | undefined;
-
   widgetContainer = null as unknown as HTMLDivElement;
   form = null as unknown as HTMLElement | null;
 
-  // DOM Element IDs
+  // Widget DOM Element IDs
   formId = "rahui-booking-form";
   datePickerId = "date-picker";
   timePickerHoursId = "time-picker-hours";
@@ -34,22 +31,29 @@ class RahuiWidget {
   errorMessageElementId = "error-message";
 
   // Development
+  rootElementIdOverride;
   localServerBaseUrl;
 
-  // Widget content
+  // User Defined Widget Settings
+  rootElementId = "";
   heading = "";
   buttonText = "";
+  maxCoversPerBooking: number | undefined;
 
-  constructor({ apiKey, localServerBaseUrl }: WidgetConfig) {
+  constructor({
+    apiKey,
+    localServerBaseUrl,
+    rootElementIdOverride,
+  }: WidgetConfig) {
     this.rootElementId;
     this.apiKey = apiKey;
-    this.localServerBaseUrl = localServerBaseUrl;
     this.apiBaseUrl = localServerBaseUrl || "https://www.rahui-booking.com";
     this.defaultRequestHeaders = {
       "Content-Type": "application/json",
       Authorization: `Bearer ${this.apiKey}`,
     };
-
+    this.localServerBaseUrl = localServerBaseUrl;
+    this.rootElementIdOverride = rootElementIdOverride;
     this.heading = "Book a table";
     this.buttonText = "Create booking";
 
@@ -138,7 +142,8 @@ class RahuiWidget {
     } = settings;
     this.buttonText = button_text || this.buttonText;
     this.heading = heading_text || this.heading;
-    this.rootElementId = root_element_id || this.rootElementId;
+    this.rootElementId =
+      this.rootElementIdOverride || root_element_id || this.rootElementId;
     this.maxCoversPerBooking = max_covers_per_booking;
   }
 
