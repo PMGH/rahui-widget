@@ -58,7 +58,6 @@ class RahuiWidget {
 
   async initialize() {
     await this.getWidgetSettings();
-    this.setupWidget();
   }
 
   setupWidget() {
@@ -124,6 +123,7 @@ class RahuiWidget {
     if (response.status === 200) {
       const settings = (await response.json()) as WidgetSettings;
       this.applySettings(settings);
+      this.setupWidget();
     } else {
       console.error({ body: await response.json() });
     }
@@ -136,9 +136,9 @@ class RahuiWidget {
       max_covers_per_booking,
       root_element_id,
     } = settings;
-    this.buttonText = button_text;
-    this.heading = heading_text;
-    this.rootElementId = root_element_id;
+    this.buttonText = button_text || this.buttonText;
+    this.heading = heading_text || this.heading;
+    this.rootElementId = root_element_id || this.rootElementId;
     this.maxCoversPerBooking = max_covers_per_booking;
   }
 
