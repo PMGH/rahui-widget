@@ -6,6 +6,7 @@ export const getWidgetContent = ({
   formId,
   datePickerHiddenInputId,
   datePickerId,
+  maxCoversPerBooking,
   timePickerHoursId,
   timePickerMinutesId,
 }: WidgetContentProps) => `
@@ -73,7 +74,9 @@ export const getWidgetContent = ({
       <div class="form-group-right">
         <div class="form__field form__field__required">
           <div class="form__field__required">
-            <label id="number_of_covers_label" for="booking[number_of_covers]">Guests</label><span class="required-field-symbol">*</span>
+            <label id="number_of_covers_label" for="booking[number_of_covers]">Guests${
+              maxCoversPerBooking ? ` (Max: ${maxCoversPerBooking})` : ""
+            }</label><span class="required-field-symbol">*</span>
           </div>
           <input
             type="number"
