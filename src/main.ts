@@ -122,14 +122,14 @@ class RahuiWidget {
 
     if (response.status === 200) {
       const settings = (await response.json()) as WidgetSettings;
-      await this.applySettings(settings);
+      this.applySettings(settings);
       this.setupWidget();
     } else {
       console.error({ body: await response.json() });
     }
   }
 
-  async applySettings(settings: WidgetSettings) {
+  applySettings(settings: WidgetSettings) {
     const {
       button_text,
       heading_text,
