@@ -42,7 +42,7 @@ export type Booking = {
 };
 
 export type WidgetContentProps = WidgetConfigContent & {
-  formId: string;
+  formClass: string;
   datePickerHiddenInputId: string;
   datePickerId: string;
   timePickerHoursId: string;
