@@ -20,7 +20,7 @@ class RahuiWidget {
   form = null as unknown as HTMLElement | null;
 
   // Widget DOM Element IDs
-  formId = "rahui-booking-form";
+  formClass = "rahui-booking-form";
   datePickerId = "date-picker";
   timePickerHoursId = "time-picker-hours";
   timePickerMinutesId = "time-picker-minutes";
@@ -85,7 +85,7 @@ class RahuiWidget {
     (rootElement || container)?.appendChild(this.widgetContainer);
 
     // Customise form submission
-    this.form = document.getElementById(this.formId);
+    this.form = document.getElementById(this.formClass);
     this.form &&
       this.form.addEventListener("submit", this.formSubmit.bind(this));
 
@@ -255,7 +255,7 @@ class RahuiWidget {
   }
 
   hideForm() {
-    const form = document.getElementById(this.formId);
+    const form = document.getElementById(this.formClass);
     if (!form) return;
 
     form.style.visibility = "hidden";
@@ -322,7 +322,7 @@ class RahuiWidget {
     this.widgetContainer.innerHTML = getWidgetContent({
       heading: this.heading,
       buttonText: this.buttonText,
-      formId: this.formId,
+      formClass: this.formClass,
       maxCoversPerBooking: this.maxCoversPerBooking,
       datePickerHiddenInputId: this.datePickerHiddenInputId,
       datePickerId: this.datePickerId,

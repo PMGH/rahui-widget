@@ -3,7 +3,7 @@ import { WidgetContentProps } from "./types";
 export const getWidgetContent = ({
   heading,
   buttonText,
-  formId,
+  formClass,
   datePickerHiddenInputId,
   datePickerId,
   maxCoversPerBooking,
@@ -28,7 +28,7 @@ export const getWidgetContent = ({
     </div>
   </div>
 
-  <form id="${formId}">
+  <form class="${formClass}">
     <input type="hidden" id="widget-submission" name="widget-submission" value="true">
     <div class="form__field__group">
       <div class="form__field">
