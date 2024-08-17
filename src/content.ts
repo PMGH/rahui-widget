@@ -33,7 +33,6 @@ export const getWidgetContent = ({
     <div class="form__field__group">
       <div class="form__field">
         <div class="form__field__required">
-          <label for="booking[date]">Booking (date and time)</label><span class="required-field-symbol">*</span>
           <input type="hidden" id="${datePickerHiddenInputId}" name="booking[date]">
         </div>
         <wc-datepicker id="${datePickerId}" first-day-of-week="1" id="${datePickerId}"></wc-datepicker>
@@ -85,6 +84,7 @@ export const getWidgetContent = ({
             name="booking[number_of_covers]"
             placeholder="1"
             min="1"
+            value="2"
             required
           />
         </div>

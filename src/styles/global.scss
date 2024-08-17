@@ -1,10 +1,18 @@
+:root {
+  --default-background-color: white;
+  --default-offset-background-color: black;
+  --default-offset-background-color--hover: #1d1d20;
+
+  --date-selected-background-color: var(--default-offset-background-color);
+}
+
 .widget__container {
   box-shadow: 0 0 18px 8px rgba(0, 0, 0, 0.1), 0 0 32px 32px rgba(0, 0, 0, 0.08);
   width: 100%;
   overflow: auto;
   transition: max-height 0.2s ease;
   font-family: Helvetica, Arial, sans-serif;
-  background-color: white;
+  background-color: var(--default-background-color);
   border-radius: 10px;
   box-sizing: border-box;
   * {
@@ -19,7 +27,7 @@
   }
   .widget__header {
     padding: 1.5rem 2rem;
-    background-color: #000;
+    background-color: var(--default-offset-background-color);
     color: #fff;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
@@ -98,7 +106,8 @@
         border: 1px solid #000000ad;
         border-radius: 3px;
         padding: 8px 10px;
-        background-color: #fff;
+        background-color: var(--default-background-color);
+        resize: vertical;
       }
       input {
         height: 48px;
@@ -121,13 +130,13 @@
     height: 48px;
     border-radius: 6px;
     font-size: 18px;
-    background-color: #000;
+    background-color: var(--default-offset-background-color);
     color: #fff;
     border: 0;
     width: 100%;
     cursor: pointer;
     &:hover {
-      background-color: #1d1d20;
+      background-color: var(--default-offset-background-color--hover);
       color: white;
     }
   }
@@ -143,6 +152,12 @@
     @media screen and (min-width: 768px) {
       justify-content: flex-start;
     }
+    .wc-datepicker__date--selected,
+    .wc-datepicker__date--selected > *,
+    .wc-datepicker__date--selected:hover > * {
+      border-radius: 5px;
+      background: var(--date-selected-background-color);
+    }
     .wc-datepicker__previous-month-button,
     .wc-datepicker__next-month-button {
       flex-shrink: unset;
@@ -155,6 +170,7 @@
     input.wc-datepicker__year-select {
       font-weight: bold;
       border: 1px solid lightgrey;
+      background: var(--default-background-color);
       height: 32px;
       text-align: center;
     }
