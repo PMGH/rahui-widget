@@ -82,7 +82,10 @@ class RahuiWidget {
       container = document.createElement("div");
       document.body.appendChild(container);
     }
-    (rootElement || container)?.appendChild(this.widgetContainer);
+    const wrapper = rootElement || container;
+    const widgetContainer = wrapper?.querySelector(".widget__container");
+    if (widgetContainer) widgetContainer.remove();
+    wrapper?.appendChild(this.widgetContainer);
 
     // Customise form submission
     this.form = document.getElementById(this.formClass);
