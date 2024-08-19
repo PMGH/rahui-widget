@@ -2,7 +2,7 @@ import { padWithZeros, timeOptionsString } from "./helpers";
 import { WidgetContentProps } from "./types";
 
 const today = new Date();
-const formattedDate = `${today.getFullYear()}-${padWithZeros(
+export const formattedTodayDate = `${today.getFullYear()}-${padWithZeros(
   today.getMonth() + 1
 )}-${padWithZeros(today.getDate())}`;
 
@@ -55,7 +55,7 @@ export const getWidgetContent = ({
             />
           </div>
           <div class="form__field__required">
-            <input type="hidden" id="${datePickerHiddenInputId}" name="booking[date]" required value="${formattedDate}">
+            <input type="hidden" id="${datePickerHiddenInputId}" name="booking[date]" required value="${formattedTodayDate}">
           </div>
           <wc-datepicker id="${datePickerId}" first-day-of-week="1"></wc-datepicker>
           <div class="time-select-container">
