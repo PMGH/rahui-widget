@@ -168,7 +168,9 @@
     .wc-datepicker__previous-month-button,
     .wc-datepicker__next-month-button {
       flex-shrink: unset;
-      height: auto;
+      height: 32px;
+      background: white;
+      color: black;
     }
     .wc-datepicker__current-month {
       align-items: center;
