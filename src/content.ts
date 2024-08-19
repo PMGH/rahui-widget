@@ -1,4 +1,10 @@
+import { padWithZeros, timeOptionsString } from "./helpers";
 import { WidgetContentProps } from "./types";
+
+const today = new Date();
+export const formattedTodayDate = `${today.getFullYear()}-${padWithZeros(
+  today.getMonth() + 1
+)}-${padWithZeros(today.getDate())}`;
 
 export const getWidgetContent = ({
   heading,
@@ -7,8 +13,7 @@ export const getWidgetContent = ({
   datePickerHiddenInputId,
   datePickerId,
   maxCoversPerBooking,
-  timePickerHoursId,
-  timePickerMinutesId,
+  timePickerId,
   widgetPreview,
 }: WidgetContentProps) => `
   <section id="rahui-widget">
@@ -32,47 +37,7 @@ export const getWidgetContent = ({
     <form class="${formClass}">
       <input type="hidden" id="widget-submission" name="widget-submission" value="true">
       <div class="form__field__group">
-        <div class="form__field">
-          <div class="form__field__required">
-            <input type="hidden" id="${datePickerHiddenInputId}" name="booking[date]">
-          </div>
-          <wc-datepicker id="${datePickerId}" first-day-of-week="1" id="${datePickerId}"></wc-datepicker>
-          <div class="time-select-container">
-            <select id="${timePickerHoursId}" name="booking[time][hours]" required class="time-select" data-time="hours">
-              <option value="0">00</option>
-              <option value="1">01</option>
-              <option value="2">02</option>
-              <option value="3">03</option>
-              <option value="4">04</option>
-              <option value="5">05</option>
-              <option value="6">06</option>
-              <option value="7">07</option>
-              <option value="8">08</option>
-              <option value="9">09</option>
-              <option value="10">10</option>
-              <option value="11">11</option>
-              <option value="12">12</option>
-              <option value="13">13</option>
-              <option value="14">14</option>
-              <option value="15">15</option>
-              <option value="16">16</option>
-              <option value="17">17</option>
-              <option value="18">18</option>
-              <option value="19">19</option>
-              <option value="20">20</option>
-              <option value="21">21</option>
-              <option value="22">22</option>
-              <option value="23">23</option>
-            </select>
-            <select id="${timePickerMinutesId}" name="booking[time][minutes]" required class="time-select" data-time="minutes">
-              <option value="00">00</option>
-              <option value="15">15</option>
-              <option value="30">30</option>
-              <option value="45">45</option>
-            </select>
-          </div>
-        </div>
-        <div class="form-group-right">
+        <div class="form__field form-group-left">
           <div class="form__field form__field__required">
             <div class="form__field__required">
               <label id="number_of_covers_label" for="booking[number_of_covers]">Guests${
@@ -89,6 +54,21 @@ export const getWidgetContent = ({
               required
             />
           </div>
+          <div class="form__field__required">
+            <input type="hidden" id="${datePickerHiddenInputId}" name="booking[date]" required value="${formattedTodayDate}">
+          </div>
+          <wc-datepicker id="${datePickerId}" first-day-of-week="1"></wc-datepicker>
+          <div class="time-select-container">
+            <select id="${timePickerId}" name="booking[time]" required class="time-select">
+              ${timeOptionsString({
+                openAt: 6,
+                closeAt: 20,
+              })}
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group-right">
           <section class="customer-details">
             <div class="form__field__group">
               <div class="form__field">
@@ -139,17 +119,16 @@ export const getWidgetContent = ({
               />
             </div>
           </section>
+          <div class="form__field">
+            <label for="booking[notes]">Notes</label>
+            <textarea
+              id="notes"
+              name="booking[notes]"
+              placeholder="Enter any additional notes"
+              rows="6"
+            ></textarea>
+          </div>
         </div>
-      </div>
-
-      <div class="form__field">
-        <label for="booking[notes]">Notes</label>
-        <textarea
-          id="notes"
-          name="booking[notes]"
-          placeholder="Enter any additional notes"
-          rows="6"
-        ></textarea>
       </div>
 
       <button type="submit" ${
