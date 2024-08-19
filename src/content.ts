@@ -50,7 +50,7 @@ export const getWidgetContent = ({
             />
           </div>
           <div class="form__field__required">
-            <input type="hidden" id="${datePickerHiddenInputId}" name="booking[date]">
+            <input type="hidden" id="${datePickerHiddenInputId}" name="booking[date]" required>
           </div>
           <wc-datepicker id="${datePickerId}" first-day-of-week="1" id="${datePickerId}"></wc-datepicker>
           <div class="time-select-container">

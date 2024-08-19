@@ -111,6 +111,7 @@ class RahuiWidget {
       };
       // Set selected date as hidden input value
       datepicker.addEventListener("selectDate", (event: any) => {
+        this.resetErrorMessage();
         const datePickerHiddenInput = document.getElementById(
           this.datePickerHiddenInputId
         ) as HTMLInputElement;
@@ -205,6 +206,16 @@ class RahuiWidget {
 
     // Booking
     const date = new Date(parsedData["booking[date]"] as string);
+    if (!parsedData["booking[date]"] || isNaN(date?.getTime())) {
+      const errorMessage = "Please select a date";
+      const errorMessageElement = document.getElementById("error-message");
+      if (errorMessageElement) {
+        errorMessageElement.textContent = errorMessage;
+        this.showErrorMessage();
+        return;
+      }
+    }
+
     const time = parsedData["booking[time]"] as string;
     const hours = time.split(":")[0];
     const mins = time.split(":")[1];
@@ -248,7 +259,7 @@ class RahuiWidget {
         method: "POST",
         body: JSON.stringify(payload),
       });
-      this.hideErrorMessage();
+      this.resetErrorMessage();
       if (response.status === 201) {
         const booking = (await response.json()) as Booking;
         this.hideForm();
@@ -261,7 +272,9 @@ class RahuiWidget {
   }
 
   hideForm() {
-    const form = document.getElementById(this.formClass);
+    const form = document.querySelector(
+      `.${this.formClass}`
+    ) as HTMLFormElement;
     if (!form) return;
 
     form.style.visibility = "hidden";
@@ -306,12 +319,14 @@ class RahuiWidget {
     });
   }
 
-  hideErrorMessage() {
+  resetErrorMessage() {
     const errorMessageElement = document.getElementById(
       this.errorMessageElementId
     );
     if (!errorMessageElement) return;
 
+    errorMessageElement.textContent =
+      "Sorry, something went wrong. Please try again.";
     errorMessageElement.style.display = "none";
   }
 
