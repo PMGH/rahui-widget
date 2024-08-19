@@ -45,8 +45,7 @@ export type WidgetContentProps = WidgetConfigContent & {
   formClass: string;
   datePickerHiddenInputId: string;
   datePickerId: string;
-  timePickerHoursId: string;
-  timePickerMinutesId: string;
+  timePickerId: string;
   widgetPreview: boolean;
 };
 

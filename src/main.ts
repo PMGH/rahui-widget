@@ -11,6 +11,7 @@ import { WcDatepicker } from "wc-datepicker/dist/components/wc-datepicker";
 
 import "./styles/global.scss";
 import "wc-datepicker/dist/themes/light.css";
+import { timeOptionsAsHtml } from "./helpers.js";
 
 class RahuiWidget {
   apiKey = "";
@@ -22,8 +23,7 @@ class RahuiWidget {
   // Widget DOM Element IDs
   formClass = "rahui-booking-form";
   datePickerId = "date-picker";
-  timePickerHoursId = "time-picker-hours";
-  timePickerMinutesId = "time-picker-minutes";
+  timePickerId = "time-picker";
   datePickerHiddenInputId = "hidden-date-input";
   confirmationContainerElementId = "confirmation-message-container";
   confirmationBookingDatetimeElementId = "confirmation-booking-datetime";
@@ -88,7 +88,9 @@ class RahuiWidget {
     wrapper?.appendChild(this.widgetContainer);
 
     // Customise form submission
-    this.form = document.getElementById(this.formClass);
+    this.form = document.getElementsByClassName(
+      this.formClass
+    )[0] as HTMLFormElement;
     this.form &&
       this.form.addEventListener("submit", this.formSubmit.bind(this));
 
@@ -175,24 +177,24 @@ class RahuiWidget {
   }
 
   applyOpeningHours(openingHours: OpeningHours) {
-    const hoursSelect = document.getElementById(this.timePickerHoursId);
-    if (hoursSelect && openingHours) {
+    const timeSelect = document.getElementById(this.timePickerId);
+    if (timeSelect && openingHours) {
       const { open_at, close_at } = openingHours?.opening_hours;
-      const options = Array.from(Array(23).keys()).map((index) => {
-        const option = document.createElement("option");
-        option.value = String(index);
-        option.innerHTML =
-          index < 10 ? String(index).padStart(2, "0") : String(index);
-        return option;
-      });
+      const openAt = parseInt(open_at);
+      const closeAt = parseInt(close_at);
       const validOptions: HTMLOptionElement[] = [];
+      const options = timeOptionsAsHtml({
+        openAt,
+        closeAt,
+      });
       options.forEach((option) => {
-        if (option.value >= open_at && option.value <= close_at) {
+        const hour = parseInt(option.value.split(":")[0]);
+        if (hour >= openAt && hour <= closeAt) {
           validOptions.push(option);
         }
       });
-      hoursSelect.innerHTML = "";
-      hoursSelect.append(...validOptions);
+      timeSelect.innerHTML = "";
+      timeSelect.append(...validOptions);
     }
   }
 
@@ -203,10 +205,11 @@ class RahuiWidget {
 
     // Booking
     const date = new Date(parsedData["booking[date]"] as string);
-    const hours = parsedData["booking[time][hours]"] as string;
-    const minutes = parsedData["booking[time][minutes]"] as string;
+    const time = parsedData["booking[time]"] as string;
+    const hours = time.split(":")[0];
+    const mins = time.split(":")[1];
     const datetime = new Date(
-      date.setHours(parseInt(hours), parseInt(minutes), 0)
+      date.setHours(parseInt(hours), parseInt(mins), 0)
     );
     const datetimeUTC = datetime.toUTCString();
     const numberOfCovers = String(parsedData["booking[number_of_covers]"]);
@@ -329,8 +332,7 @@ class RahuiWidget {
       maxCoversPerBooking: this.maxCoversPerBooking,
       datePickerHiddenInputId: this.datePickerHiddenInputId,
       datePickerId: this.datePickerId,
-      timePickerHoursId: this.timePickerHoursId,
-      timePickerMinutesId: this.timePickerMinutesId,
+      timePickerId: this.timePickerId,
       widgetPreview: this.widgetPreview,
     });
   }
