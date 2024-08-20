@@ -265,8 +265,10 @@ class RahuiWidget {
         this.hideForm();
         this.showConfirmationMessage(booking);
       } else {
-        console.error({ body: await response.json() });
-        this.showErrorMessage();
+        const body = await response.json();
+        if (body.errors) {
+          this.showErrorMessage(body.errors[0]);
+        }
       }
     }
   }
@@ -330,12 +332,15 @@ class RahuiWidget {
     errorMessageElement.style.display = "none";
   }
 
-  showErrorMessage() {
+  showErrorMessage(message = "") {
     const errorMessageElement = document.getElementById(
       this.errorMessageElementId
     );
     if (!errorMessageElement) return;
 
+    if (Boolean(message.length)) {
+      errorMessageElement.textContent = message;
+    }
     errorMessageElement.style.display = "block";
   }
 
